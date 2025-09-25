@@ -99,20 +99,14 @@ function Home({ onNavigate, top3 }) {
   return (
     <div className="p-6 md:p-10">
       <section className="min-h-[40vh] flex flex-col items-start justify-center gap-6">
-        <div className="inline-flex items-center gap-3 mb-2">
-          <LivePill />
-          <span className="text-sm text-gray-400">сезон 2 скоро стартует</span>
-        </div>
         <h1 className="text-4xl md:text-7xl font-extrabold leading-tight">
           DIGITAL HUSTLAS
         </h1>
-        <p className="max-w-2xl text-gray-300 text-lg md:text-xl">
-          Экосистема для продюсеров: 31-FLIP турнир в реальном времени, закрытое комьюнити prod.by, радио-стрим и релизы.
-        </p>
         <div className="flex flex-wrap gap-4">
           <NeonButton onClick={() => onNavigate("flip")}>Смотреть рейтинг 31‑FLIP</NeonButton>
           <NeonButton variant="pink" onClick={() => onNavigate("prod")}>Вступить в prod.by</NeonButton>
           <NeonButton variant="alt" onClick={() => onNavigate("radio")}>Слушать Radio</NeonButton>
+          <NeonButton variant="alt" onClick={() => onNavigate("discord")}>Присоединиться к Discord</NeonButton>
         </div>
       </section>
 
@@ -388,7 +382,7 @@ function Radio() {
     <div className="p-6 md:p-10">
       <div className="flex items-center gap-3 mb-4"><LivePill /><span className="text-gray-400">YouTube Live</span></div>
       <h1 className="text-3xl md:text-5xl font-extrabold">Digital Hustlas Radio</h1>
-      <p className="mt-3 text-gray-300 max-w-2xl">Стримим отобранные модераторами треки и биты из закрытой группы prod.by. Подключайся к эфирам, участвуй в премьерах и подборках.</p>
+      <p className="mt-3 text-gray-300 max-w-2xl">Стримим отобранные модераторами треки и биты из закрытой группы prod.by.</p>
 
       <div className={cx("mt-8 rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
         <div className="aspect-video w-full rounded-2xl bg-black/40 grid place-items-center text-gray-500">
@@ -396,7 +390,7 @@ function Radio() {
         </div>
       </div>
 
-      <div className="mt-10">
+      <div className="mt-10 hidden">
         <h2 className="text-2xl font-bold mb-4">Архив эфиров</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {new Array(6).fill(0).map((_, i) => (
@@ -415,20 +409,26 @@ function Radio() {
 function ProdBy() {
   return (
     <div className="p-6 md:p-10">
-      <h1 className="text-3xl md:text-5xl font-extrabold">prod.by — закрытое комьюнити</h1>
-      <p className="mt-3 text-gray-300 max-w-2xl">Ежемесячная подписка: доступ к закрытому чату, разборам треков, коллабам, шортлисту для радио и сборников.</p>
+      <h1 className="text-3xl md:text-5xl font-extrabold">prod.by</h1>
+      <p className="mt-3 text-gray-300 max-w-2xl">Ежемесячная подписка: доступ к закрытому чату, доступ к турнирам, киты, советы по звукорежиссуре и многое другое.</p>
       <div className="mt-6 flex gap-4">
         <NeonButton>Оформить подписку</NeonButton>
-        <NeonButton variant="pink">Войти</NeonButton>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-        {["Разборы треков", "Коллаб‑чаты", "Питчинг в релизы"].map((t, i) => (
-          <div key={i} className={cx("p-6 rounded-3xl border", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-            <div className="text-xl font-bold mb-2">{t}</div>
-            <div className="text-gray-300 text-sm">Минималистичный набор правил, активная модерация, фокус на росте и качестве работ.</div>
-          </div>
-        ))}
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold mb-6">Разделы</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { title: "Треки, биты, электронная музыка", desc: "" },
+            { title: "Инструменты", desc: "Киты, лупы, звукорежиссура" },
+            { title: "Релизы", desc: "Публикация релизов" }
+          ].map((section, i) => (
+            <div key={i} className={cx("p-6 rounded-3xl border", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+              <div className="text-xl font-bold mb-2">{section.title}</div>
+              {section.desc && <div className="text-gray-300 text-sm">{section.desc}</div>}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -438,15 +438,26 @@ function Releases() {
   return (
     <div className="p-6 md:p-10">
       <h1 className="text-3xl md:text-5xl font-extrabold">Releases</h1>
-      <p className="mt-3 text-gray-300 max-w-2xl">Уже выпущено 3 сборника: rap, electronic. В планах — больше релизов от участников prod.by.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className={cx("p-4 rounded-3xl border", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-            <div className="aspect-square rounded-2xl bg-black/40 mb-3 grid place-items-center text-gray-500">Обложка</div>
-            <div className="font-semibold">Digital Hustlas Vol. {i}</div>
-            <div className="text-sm text-gray-400">Жанры: rap / electronic</div>
-          </div>
+        {[
+          { title: "PLAYBOOKIE PLAYMAKERAH vol.1", link: "https://band.link/playbookie", cover: "pp.jpg" },
+          { title: "Late Night Phone Calls vol.1", link: "https://band.link/late_night_phone", cover: "lnpc.jpg" },
+          { title: "Archive 1", link: "https://muz.lc/Archive1", cover: "arc.jpg" }
+        ].map((release, i) => (
+          <a key={i} href={release.link} target="_blank" rel="noopener noreferrer" className="block">
+            <div className={cx("p-4 rounded-3xl border hover:scale-105 transition-transform cursor-pointer", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+              <div className="aspect-square rounded-2xl mb-3 overflow-hidden">
+                <img 
+                  src={`${import.meta.env.BASE_URL}${release.cover}`} 
+                  alt={release.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="font-semibold text-white hover:text-cyan-300 transition-colors">{release.title}</div>
+              <div className="text-sm text-gray-400">Digital Hustlas</div>
+            </div>
+          </a>
         ))}
       </div>
     </div>
@@ -460,12 +471,12 @@ function Discord() {
         <LivePill />
         <span className="text-gray-400">Discord Community</span>
       </div>
-      <h1 className="text-3xl md:text-5xl font-extrabold">Discord — комьюнити</h1>
-      <p className="mt-3 text-gray-300 max-w-2xl">Присоединяйся к Discord серверу Digital Hustlas. Общайся с продюсерами, участвуй в обсуждениях, получай уведомления о турнирах.</p>
+      <h1 className="text-3xl md:text-5xl font-extrabold">Discord сервер</h1>
       
       <div className="mt-6 flex gap-4">
-        <NeonButton variant="pink">Присоединиться к Discord</NeonButton>
-        <NeonButton variant="alt">Открыть в браузере</NeonButton>
+        <a href="http://discord.gg/digitalhustlas" target="_blank" rel="noopener noreferrer">
+          <NeonButton variant="pink">Присоединиться к Discord</NeonButton>
+        </a>
       </div>
 
       <div className="mt-10">
@@ -491,11 +502,16 @@ function Discord() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-        {["Общие каналы", "Турнирные каналы", "Коллаб-каналы"].map((t, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+        {[
+          { title: "Общие каналы", desc: "Комнаты для мероприятий" },
+          { title: "Playground", desc: "Место для тренировок" },
+          { title: "Games", desc: "Комната для тех кто играет в игры" },
+          { title: "Radio", desc: "24/7 трансляция лучших треков из prod.by" }
+        ].map((channel, i) => (
           <div key={i} className={cx("p-6 rounded-3xl border", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-            <div className="text-xl font-bold mb-2">{t}</div>
-            <div className="text-gray-300 text-sm">Активные обсуждения, обмен опытом, анонсы событий и турниров.</div>
+            <div className="text-xl font-bold mb-2">{channel.title}</div>
+            <div className="text-gray-300 text-sm">{channel.desc}</div>
           </div>
         ))}
       </div>
@@ -554,7 +570,6 @@ function Playlists() {
         <span className="text-gray-400">Music Platforms</span>
       </div>
       <h1 className="text-3xl md:text-5xl font-extrabold">Плейлисты</h1>
-      <p className="mt-3 text-gray-300 max-w-2xl">Официальные плейлисты Digital Hustlas на всех популярных музыкальных площадках. Слушай лучшие треки участников турниров и комьюнити.</p>
       
       <div className="mt-10">
         <h2 className="text-2xl font-bold mb-6">Площадки</h2>
@@ -620,25 +635,16 @@ function Profile() {
   return (
     <div className="p-6 md:p-10">
       <h1 className="text-3xl md:text-5xl font-extrabold">Мой профиль</h1>
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className={cx("p-6 rounded-3xl border", glow(2))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-          <div className="text-lg font-semibold mb-2">Аккаунт</div>
-          <div className="text-sm text-gray-300">Ник: @yourname<br/>Подписка: prod.by (активна)</div>
-        </div>
-        <div className={cx("p-6 rounded-3xl border", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-          <div className="text-lg font-semibold mb-2">Статистика</div>
-          <div className="text-sm text-gray-300">Участий: 4<br/>Лучший результат: 32 балла</div>
-        </div>
-        <div className={cx("p-6 rounded-3xl border", glow(3))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-          <div className="text-lg font-semibold mb-2">Уведомления</div>
-          <div className="text-sm text-gray-300">Напоминания о раундах включены</div>
-        </div>
+      <div className="mt-6 flex items-center justify-center min-h-[40vh]">
+        <div className="text-2xl text-gray-300">Скоро.</div>
       </div>
     </div>
   );
 }
 
 function Navbar({ page, onNavigate }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
   const items = [
     { k: "home", t: "Home" },
     { k: "flip", t: "31‑FLIP" },
@@ -649,12 +655,25 @@ function Navbar({ page, onNavigate }) {
     { k: "playlists", t: "Плейлисты" },
     { k: "profile", t: "Профиль" },
   ];
+
+  const handleNavClick = (itemKey) => {
+    onNavigate(itemKey);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-black/40 border-b border-[#111827]">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex items-center gap-4">
-        <div className="text-xl md:text-2xl font-extrabold tracking-widest" style={{ textShadow: `0 0 20px ${COLORS.neon3}55` }}>
-          DIGITAL <span style={{ color: COLORS.neon4 }}>HUSTLAS</span>
+        <div className="flex items-center">
+          <img 
+            src={`${import.meta.env.BASE_URL}logo.png`} 
+            alt="Logo" 
+            className="h-10 w-auto object-contain cursor-pointer" 
+            onClick={() => handleNavClick("home")}
+          />
         </div>
+        
+        {/* Desktop Navigation */}
         <nav className="ml-auto hidden md:flex items-center gap-2">
           {items.map((it, i) => (
             <button
@@ -669,7 +688,39 @@ function Navbar({ page, onNavigate }) {
             </button>
           ))}
         </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden ml-auto p-2 rounded-xl border border-[#1F2937] hover:border-cyan-300 transition-colors"
+        >
+          <div className="w-6 h-6 flex flex-col justify-center gap-1">
+            <div className={`h-0.5 bg-white transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
+            <div className={`h-0.5 bg-white transition-opacity ${mobileMenuOpen ? 'opacity-0' : ''}`}></div>
+            <div className={`h-0.5 bg-white transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
+          </div>
+        </button>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-[#1F2937] bg-black/80 backdrop-blur">
+          <nav className="px-4 py-4 space-y-2">
+            {items.map((it, i) => (
+              <button
+                key={it.k}
+                onClick={() => handleNavClick(it.k)}
+                className={cx(
+                  "w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold transition",
+                  page === it.k ? `text-white border border-[${COLORS.neon2}] ${glow(1)}` : "text-gray-400 hover:text-white hover:bg-[#111111]"
+                )}
+              >
+                {it.t}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
