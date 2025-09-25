@@ -17,29 +17,17 @@ const COLORS = {
   border: "#1F2937",
 };
 
-// ---- MOCK DATA ----
-const mockProducers = [
-  {
-    id: 1,
-    name: "Raspo",
-    handle: "@raspo",
-    avatar: "RS",
-    country: "KZ",
-    socials: { ig: "raspo.official", tg: "raspo" },
-    weeks: [28, 30, 26, 32],
-    wins: 1,
-  },
-  { id: 2, name: "Mira", handle: "@mira", avatar: "MR", country: "KZ", socials: { ig: "mira" }, weeks: [24, 27, 29, 30], wins: 0 },
-  { id: 3, name: "Bytewave", handle: "@bytewave", avatar: "BW", country: "UA", socials: { ig: "bytewave" }, weeks: [26, 22, 31, 27], wins: 1 },
-  { id: 4, name: "Khan", handle: "@khan", avatar: "KH", country: "KZ", socials: { ig: "khan" }, weeks: [18, 25, 28, 29], wins: 0 },
-  { id: 5, name: "Juno", handle: "@juno", avatar: "JN", country: "RU", socials: { ig: "juno" }, weeks: [20, 22, 26, 28], wins: 0 },
-  { id: 6, name: "Sora", handle: "@sora", avatar: "SR", country: "JP", socials: { ig: "sora" }, weeks: [30, 18, 24, 26], wins: 1 },
-  { id: 7, name: "Loopman", handle: "@loopman", avatar: "LM", country: "KZ", socials: { ig: "loopman" }, weeks: [14, 20, 27, 22], wins: 0 },
-  { id: 8, name: "Zer0", handle: "@zero", avatar: "Z0", country: "KG", socials: { ig: "zer0" }, weeks: [22, 24, 21, 24], wins: 0 },
-  { id: 9, name: "Echo", handle: "@echo", avatar: "EC", country: "KZ", socials: { ig: "echo" }, weeks: [17, 21, 19, 25], wins: 0 },
-  { id: 10, name: "NXT", handle: "@nxt", avatar: "NX", country: "UZ", socials: { ig: "nxt" }, weeks: [21, 23, 18, 23], wins: 0 },
-  { id: 11, name: "Rival", handle: "@rival", avatar: "RV", country: "KZ", socials: { ig: "rival" }, weeks: [15, 18, 20, 21], wins: 0 },
-  { id: 12, name: "Devi", handle: "@devi", avatar: "DV", country: "AM", socials: { ig: "devi" }, weeks: [25, 19, 22, 18], wins: 0 },
+// ---- REAL DATA ----
+const realProducers = [
+  { id: 1, name: "XN", userId: "689398266810728459", totalPoints: 32.6, weightedScore: 54.8, totalWorks: 47, rounds: { "1346482874857291838-Round 1": 33.5, "1346482874857291838-Round 2": 31.6, "1346482874857291838-Round 3": 34.6, "1346482874857291838-Round 4": 33.1, "1346482874857291838-Round 5": 29.8, "1347561694867488789-Round 1": 38.8, "1347561694867488789-Round 2": 30.8, "1347561694867488789-Round 3": 32.1, "1347561694867488789-Round 4": 34.8, "1349008508884090910-Round 1": 29.2, "1349008508884090910-Round 2": 36.2, "1349008508884090910-Round 3": 29.7, "1349008508884090910-Round 4": 34.4, "1352945465368510504-Round 1": 35.1, "1352945465368510504-Round 2": 35.8, "1352945465368510504-Round 3": 34.6, "1352945465368510504-Round 4": 38.7, "1355483362206154855-Round 1": 29.5, "1355483362206154855-Round 2": 32.2, "1355483362206154855-Round 3": 31.4, "1355483362206154855-Round 4": 34.5, "1355483362206154855-Round 5": 30.2, "1355483362206154855-Round 6": 31.6 } },
+  { id: 3, name: "Муса Дореус", userId: "422829998433632257", totalPoints: 31.5, weightedScore: 49.4, totalWorks: 36, rounds: { "1347561694867488789-Round 1": 28.9, "1347561694867488789-Round 2": 37.0, "1347561694867488789-Round 3": 30.5, "1347561694867488789-Round 4": 28.9, "1349008508884090910-Round 1": 32.0, "1349008508884090910-Round 2": 26.6, "1349008508884090910-Round 3": 28.3, "1349008508884090910-Round 4": 40.1, "1352945465368510504-Round 1": 34.8, "1352945465368510504-Round 2": 38.9, "1352945465368510504-Round 3": 34.1, "1352945465368510504-Round 4": 34.7, "1352945465368510504-Round 5": 31.7, "1352945465368510504-Round 6": 28.5, "1352945465368510504-Round 7": 33.3, "1355483362206154855-Round 1": 32.9, "1355483362206154855-Round 2": 35.8, "1355483362206154855-Round 3": 35.0, "1355483362206154855-Round 4": 32.3, "1355483362206154855-Round 5": 33.3 } },
+  { id: 4, name: "ONLYTHENEXT", userId: "729775540424278149", totalPoints: 32.7, weightedScore: 47.3, totalWorks: 27, rounds: { "1346482874857291838-Round 3": 36.8, "1347561694867488789-Round 1": 37.3, "1347561694867488789-Round 2": 38.7, "1347561694867488789-Round 3": 35.4, "1349008508884090910-Round 1": 29.0, "1349008508884090910-Round 2": 25.9, "1349008508884090910-Round 3": 32.3, "1349008508884090910-Round 4": 34.8, "1352945465368510504-Round 1": 38.5, "1352945465368510504-Round 2": 39.1, "1355483362206154855-Round 1": 31.3, "1355483362206154855-Round 2": 33.3, "1355483362206154855-Round 3": 28.8 } },
+  { id: 5, name: "Леон", userId: "692692176244834335", totalPoints: 29.0, weightedScore: 46.1, totalWorks: 38, rounds: { "1346482874857291838-Round 1": 33.4, "1346482874857291838-Round 3": 27.9, "1346482874857291838-Round 4": 30.0, "1346482874857291838-Round 5": 30.0, "1347561694867488789-Round 1": 35.4, "1347561694867488789-Round 2": 31.0, "1347561694867488789-Round 3": 33.0, "1349008508884090910-Round 1": 22.0, "1349008508884090910-Round 2": 33.0, "1349008508884090910-Round 3": 22.5, "1349008508884090910-Round 4": 28.1, "1352945465368510504-Round 1": 29.7, "1352945465368510504-Round 2": 32.7, "1352945465368510504-Round 3": 26.7, "1355483362206154855-Round 1": 25.3, "1355483362206154855-Round 2": 30.8, "1355483362206154855-Round 4": 30.8, "1355483362206154855-Round 6": 22.8 } },
+  { id: 6, name: "Tony Helfiger", userId: "777483643051835392", totalPoints: 29.3, weightedScore: 44.9, totalWorks: 33, rounds: { "1346482874857291838-Round 2": 23.0, "1346482874857291838-Round 4": 27.9, "1346482874857291838-Round 5": 36.2, "1346482874857291838-Round 6": 29.7, "1347561694867488789-Round 1": 24.7, "1347561694867488789-Round 2": 25.1, "1347561694867488789-Round 3": 26.8, "1347561694867488789-Round 4": 26.3, "1349008508884090910-Round 1": 31.7, "1349008508884090910-Round 2": 32.5, "1349008508884090910-Round 3": 23.2, "1349008508884090910-Round 4": 39.5, "1352945465368510504-Round 1": 28.3, "1352945465368510504-Round 2": 37.4, "1352945465368510504-Round 4": 35.3, "1355483362206154855-Round 2": 32.3, "1355483362206154855-Round 4": 23.4, "1355483362206154855-Round 6": 37.5 } },
+  { id: 7, name: "Slleem", userId: "624013571759800320", totalPoints: 29.2, weightedScore: 44.4, totalWorks: 32, rounds: { "1346482874857291838-Round 1": 31.3, "1346482874857291838-Round 3": 29.8, "1346482874857291838-Round 5": 33.0, "1347561694867488789-Round 2": 35.2, "1347561694867488789-Round 3": 28.5, "1347561694867488789-Round 4": 31.0, "1349008508884090910-Round 1": 29.7, "1349008508884090910-Round 3": 24.7, "1349008508884090910-Round 4": 25.8, "1352945465368510504-Round 1": 27.1, "1352945465368510504-Round 2": 27.8, "1352945465368510504-Round 3": 29.7, "1352945465368510504-Round 4": 34.3, "1352945465368510504-Round 5": 32.7, "1355483362206154855-Round 1": 33.1, "1355483362206154855-Round 2": 29.3, "1355483362206154855-Round 3": 27.5, "1355483362206154855-Round 5": 29.0 } },
+  { id: 8, name: "PLAYDADDY", userId: "279986249094397982", totalPoints: 31.3, weightedScore: 44.3, totalWorks: 25, rounds: { "1349008508884090910-Round 1": 35.3, "1349008508884090910-Round 2": 32.0, "1349008508884090910-Round 3": 34.4, "1349008508884090910-Round 4": 33.3, "1352945465368510504-Round 1": 34.0, "1352945465368510504-Round 2": 26.1, "1352945465368510504-Round 3": 33.5, "1352945465368510504-Round 4": 28.0, "1352945465368510504-Round 5": 30.7, "1352945465368510504-Round 6": 33.6 } },
+  { id: 9, name: "friedeyez?", userId: "305386727403683851", totalPoints: 30.0, weightedScore: 43.8, totalWorks: 28, rounds: { "1347561694867488789-Round 1": 27.7, "1347561694867488789-Round 2": 26.1, "1349008508884090910-Round 1": 31.8, "1349008508884090910-Round 2": 28.3, "1352945465368510504-Round 1": 37.3, "1352945465368510504-Round 2": 35.0, "1352945465368510504-Round 3": 32.3, "1352945465368510504-Round 4": 35.7, "1352945465368510504-Round 5": 27.8, "1352945465368510504-Round 6": 31.2, "1352945465368510504-Round 7": 27.9 } },
+  { id: 10, name: "Wistful Waves", userId: "298580088323309578", totalPoints: 29.8, weightedScore: 43.1, totalWorks: 27, rounds: { "1346482874857291838-Round 2": 31.4, "1346482874857291838-Round 3": 35.9, "1347561694867488789-Round 1": 36.8, "1347561694867488789-Round 2": 32.3, "1347561694867488789-Round 3": 35.4, "1347561694867488789-Round 4": 33.7, "1349008508884090910-Round 1": 27.2, "1349008508884090910-Round 2": 30.7, "1349008508884090910-Round 3": 30.7, "1349008508884090910-Round 4": 22.7, "1352945465368510504-Round 1": 35.4, "1352945465368510504-Round 3": 35.2, "1355483362206154855-Round 1": 22.0 } }
 ];
 
 function sum(arr) { return arr.reduce((a, b) => a + b, 0); }
@@ -144,13 +132,15 @@ function Home({ onNavigate, top3 }) {
               borderColor: COLORS.border,
             }}>
               <div className="flex items-center gap-4">
-                <Avatar label={p.avatar} />
+                <div className="w-10 h-10 rounded-full bg-[#111111] border border-[#1F2937] flex items-center justify-center text-sm font-bold text-white">
+                  {p.name.charAt(0)}
+                </div>
                 <div>
                   <div className="text-lg font-semibold">{i + 1}. {p.name}</div>
-                  <div className="text-sm text-gray-400">{p.handle} • {p.country}</div>
+                  <div className="text-sm text-gray-400">ID: {p.userId.slice(-6)}</div>
                 </div>
                 <div className="ml-auto text-right">
-                  <div className="text-2xl font-extrabold">{p.total}</div>
+                  <div className="text-2xl font-extrabold">{p.totalPoints}</div>
                   <div className="text-xs text-gray-400">баллов</div>
                 </div>
               </div>
@@ -182,19 +172,20 @@ function Home({ onNavigate, top3 }) {
 
 function FlipLeaderboard({ data, onOpenProducer }) {
   const [query, setQuery] = useState("");
-  const [week, setWeek] = useState("all");
 
   const filtered = useMemo(() => {
-    const list = data
-      .map((p) => {
-        const total = sum(p.weeks);
-        const weekScore = week === "all" ? total : p.weeks[Number(week) - 1] || 0;
-        return { ...p, total, weekScore };
-      })
-      .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()) || p.handle.toLowerCase().includes(query.toLowerCase()));
+    const list = data.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()));
+    return list.sort((a, b) => b.totalPoints - a.totalPoints);
+  }, [data, query]);
 
-    return list.sort((a, b) => (week === "all" ? b.total - a.total : b.weekScore - a.weekScore));
-  }, [data, query, week]);
+  // Get all unique round keys for column headers
+  const allRounds = useMemo(() => {
+    const rounds = new Set();
+    data.forEach(producer => {
+      Object.keys(producer.rounds).forEach(round => rounds.add(round));
+    });
+    return Array.from(rounds).sort();
+  }, [data]);
 
   return (
     <div className="p-6 md:p-10">
@@ -210,61 +201,53 @@ function FlipLeaderboard({ data, onOpenProducer }) {
             onChange={(e) => setQuery(e.target.value)}
             className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
           />
-          <select
-            value={week}
-            onChange={(e) => setWeek(e.target.value)}
-            className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none"
-          >
-            <option value="all">Все недели</option>
-            <option value="1">Неделя 1</option>
-            <option value="2">Неделя 2</option>
-            <option value="3">Неделя 3</option>
-            <option value="4">Неделя 4</option>
-          </select>
         </div>
       </div>
 
       <div className="rounded-3xl border overflow-hidden" style={{ background: COLORS.card, borderColor: COLORS.border }}>
-        <table className="w-full text-left">
-          <thead>
-            <tr className="text-sm uppercase tracking-wider text-gray-400">
-              <th className="p-4">Место</th>
-              <th className="p-4">Продюсер</th>
-              <th className="p-4">Страна</th>
-              <th className="p-4">Победы</th>
-              <th className="p-4">Баллы {week === "all" ? "(сезон)" : `(Неделя ${week})`}</th>
-              {week === "all" && <th className="p-4">Разбивка по неделям</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((p, idx) => (
-              <tr key={p.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 10 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => onOpenProducer(p)}>
-                <td className="p-4 font-bold">{idx + 1}</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Avatar label={p.avatar} />
-                    <div>
-                      <div className="font-semibold">{p.name}</div>
-                      <div className="text-xs text-gray-400">{p.handle}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="p-4">{p.country}</td>
-                <td className="p-4">{p.wins}</td>
-                <td className="p-4 font-semibold">{week === "all" ? p.total : p.weekScore}</td>
-                {week === "all" && (
-                  <td className="p-4">
-                    <div className="flex gap-2">
-                      {p.weeks.map((w, i) => (
-                        <span key={i} className="px-3 py-1 rounded-xl bg-[#0F0F10] border border-[#1F2937] text-sm">W{i + 1}: {w}</span>
-                      ))}
-                    </div>
-                  </td>
-                )}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="text-sm uppercase tracking-wider text-gray-400">
+                <th className="p-4 sticky left-0 bg-[#111111] z-10">Место</th>
+                <th className="p-4 sticky left-16 bg-[#111111] z-10">Имя пользователя</th>
+                <th className="p-4 sticky left-64 bg-[#111111] z-10">ID пользователя</th>
+                <th className="p-4 sticky left-80 bg-[#111111] z-10">Итого баллов</th>
+                <th className="p-4 sticky left-96 bg-[#111111] z-10">Взвешенный балл</th>
+                <th className="p-4 sticky left-[28rem] bg-[#111111] z-10">Итого работ</th>
+                {allRounds.map((round, idx) => (
+                  <th key={round} className="p-4 min-w-[120px] text-center">
+                    <div className="text-xs">{round.split('-')[0].slice(-4)}</div>
+                    <div className="text-xs">R{round.split('Round ')[1]}</div>
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((p, idx) => (
+                <tr key={p.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 10 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => onOpenProducer(p)}>
+                  <td className="p-4 font-bold sticky left-0 bg-[#111111] z-10">{idx + 1}</td>
+                  <td className="p-4 sticky left-16 bg-[#111111] z-10 font-semibold">{p.name}</td>
+                  <td className="p-4 sticky left-64 bg-[#111111] z-10 text-xs text-gray-400">{p.userId}</td>
+                  <td className="p-4 sticky left-80 bg-[#111111] z-10 font-semibold">{p.totalPoints}</td>
+                  <td className="p-4 sticky left-96 bg-[#111111] z-10 font-semibold">{p.weightedScore}</td>
+                  <td className="p-4 sticky left-[28rem] bg-[#111111] z-10 font-semibold">{p.totalWorks}</td>
+                  {allRounds.map((round) => (
+                    <td key={round} className="p-4 text-center">
+                      {p.rounds[round] ? (
+                        <span className="px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-sm">
+                          {p.rounds[round]}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500">-</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -297,71 +280,58 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
 function ProducerModal({ producer, onClose }) {
   if (!producer) return null;
-  const total = sum(producer.weeks);
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className={cx("relative w-full md:w-[860px] max-h-[90vh] overflow-auto p-6 md:p-8 rounded-t-3xl md:rounded-3xl border", glow(2))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
         <div className="flex items-center gap-4">
-          <Avatar label={producer.avatar} />
+          <div className="w-12 h-12 rounded-full bg-[#111111] border border-[#1F2937] flex items-center justify-center text-lg font-bold text-white">
+            {producer.name.charAt(0)}
+          </div>
           <div className="flex-1">
-            <div className="text-2xl font-bold">{producer.name} <span className="text-gray-400 text-base">{producer.handle}</span></div>
-            <div className="text-sm text-gray-400">{producer.country} • Побед: {producer.wins} • Баллы: {total}</div>
+            <div className="text-2xl font-bold">{producer.name}</div>
+            <div className="text-sm text-gray-400">ID: {producer.userId} • Баллы: {producer.totalPoints} • Работ: {producer.totalWorks}</div>
           </div>
           <NeonButton onClick={onClose}>Закрыть</NeonButton>
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="col-span-2">
-            <div className="text-lg font-semibold mb-2">История по неделям</div>
+            <div className="text-lg font-semibold mb-2">Результаты по раундам</div>
             <div className="flex gap-3 flex-wrap">
-              {producer.weeks.map((w, i) => (
-                <div key={i} className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
-                  <div className="text-xs text-gray-400">Неделя {i + 1}</div>
-                  <div className="text-xl font-bold">{w} баллов</div>
+              {Object.entries(producer.rounds).map(([round, score]) => (
+                <div key={round} className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
+                  <div className="text-xs text-gray-400">{round.split('-')[0].slice(-4)} R{round.split('Round ')[1]}</div>
+                  <div className="text-xl font-bold">{score} баллов</div>
                 </div>
               ))}
             </div>
 
             <div className="mt-6">
-              <div className="text-lg font-semibold mb-2">Треки</div>
+              <div className="text-lg font-semibold mb-2">Статистика</div>
               <div className="space-y-3 text-sm text-gray-300">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-xl bg-[#0F0F10] border border-[#1F2937]">W1</span>
-                  <span className="flex-1">Soul Flip — 140 BPM, Am</span>
-                  <button className="text-cyan-300 underline">Слушать</button>
+                <div className="flex items-center justify-between">
+                  <span>Итого баллов:</span>
+                  <span className="font-bold">{producer.totalPoints}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-xl bg-[#0F0F10] border border-[#1F2937]">W2</span>
-                  <span className="flex-1">Synthwave Cut — 120 BPM, Dm</span>
-                  <button className="text-cyan-300 underline">Слушать</button>
+                <div className="flex items-center justify-between">
+                  <span>Взвешенный балл:</span>
+                  <span className="font-bold">{producer.weightedScore}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-xl bg-[#0F0F10] border border-[#1F2937]">W3</span>
-                  <span className="flex-1">Drill Texture — 144 BPM, Fm</span>
-                  <button className="text-cyan-300 underline">Слушать</button>
+                <div className="flex items-center justify-between">
+                  <span>Всего работ:</span>
+                  <span className="font-bold">{producer.totalWorks}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div>
-            <div className="text-lg font-semibold mb-2">Ссылки</div>
-            <div className="space-y-2 text-sm">
-              {producer.socials?.ig && (
-                <a href="#" className="block underline text-cyan-300">Instagram: @{producer.socials.ig}</a>
-              )}
-              {producer.socials?.tg && (
-                <a href="#" className="block underline text-cyan-300">Telegram: @{producer.socials.tg}</a>
-              )}
+            <div className="text-lg font-semibold mb-2">Информация</div>
+            <div className="space-y-2 text-sm text-gray-300">
+              <div>Пользователь: <span className="font-bold">{producer.name}</span></div>
+              <div>ID: <span className="font-mono text-xs">{producer.userId}</span></div>
             </div>
-
-            <div className="mt-6 text-lg font-semibold mb-2">Метрики</div>
-            <ul className="text-sm text-gray-300 space-y-2">
-              <li>Средний балл / неделя: <b>{Math.round(total / producer.weeks.length)}</b></li>
-              <li>Максимум за неделю: <b>{Math.max(...producer.weeks)}</b></li>
-              <li>Стабильность: <b>{stability(producer.weeks)}%</b></li>
-            </ul>
           </div>
         </div>
       </div>
@@ -727,28 +697,12 @@ function Navbar({ page, onNavigate }) {
 
 export default function App() {
   const [page, setPage] = useState("home");
-  const [producers, setProducers] = useState(mockProducers);
+  const [producers, setProducers] = useState(realProducers);
   const [openProducer, setOpenProducer] = useState(null);
-
-  // Simulate a tiny live tick (visual only): randomly nudge a week score
-  useEffect(() => {
-    const id = setInterval(() => {
-      setProducers((prev) => {
-        const idx = Math.floor(Math.random() * prev.length);
-        const w = Math.floor(Math.random() * 4);
-        // limit nudge to keep stability of mock data
-        const delta = Math.random() > 0.7 ? 1 : 0;
-        const next = prev.map((p, i) => (i === idx ? { ...p, weeks: p.weeks.map((x, j) => (j === w ? x + delta : x)) } : p));
-        return next;
-      });
-    }, 2500);
-    return () => clearInterval(id);
-  }, []);
 
   const top3 = useMemo(() => {
     return [...producers]
-      .map((p) => ({ ...p, total: sum(p.weeks) }))
-      .sort((a, b) => b.total - a.total)
+      .sort((a, b) => b.totalPoints - a.totalPoints)
       .slice(0, 3);
   }, [producers]);
 
