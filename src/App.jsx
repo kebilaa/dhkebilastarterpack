@@ -208,16 +208,16 @@ function FlipLeaderboard({ data, onOpenProducer }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="text-sm uppercase tracking-wider text-gray-400">
-                <th className="p-4 sticky left-0 bg-[#111111] z-10">Место</th>
-                <th className="p-4 sticky left-16 bg-[#111111] z-10">Имя пользователя</th>
-                <th className="p-4 sticky left-64 bg-[#111111] z-10">ID пользователя</th>
-                <th className="p-4 sticky left-80 bg-[#111111] z-10">Итого баллов</th>
-                <th className="p-4 sticky left-96 bg-[#111111] z-10">Взвешенный балл</th>
-                <th className="p-4 sticky left-[28rem] bg-[#111111] z-10">Итого работ</th>
+              <tr className="text-xs md:text-sm uppercase tracking-wider text-gray-400">
+                <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-24 md:w-32">Имя</th>
+                <th className="p-2 md:p-4 sticky left-36 md:left-44 bg-[#111111] z-10 w-16 md:w-20 text-xs">ID</th>
+                <th className="p-2 md:p-4 sticky left-52 md:left-64 bg-[#111111] z-10 w-12 md:w-16 text-xs">Баллы</th>
+                <th className="p-2 md:p-4 sticky left-64 md:left-80 bg-[#111111] z-10 w-12 md:w-16 text-xs">Вес</th>
+                <th className="p-2 md:p-4 sticky left-76 md:left-96 bg-[#111111] z-10 w-12 md:w-16 text-xs">Работ</th>
                 {allRounds.map((round, idx) => (
-                  <th key={round} className="p-4 min-w-[120px] text-center">
-                    <div className="text-xs">{round.split('-')[0].slice(-4)}</div>
+                  <th key={round} className="p-1 md:p-4 min-w-[60px] md:min-w-[120px] text-center">
+                    <div className="text-xs md:text-sm">{round.split('-')[0].slice(-4)}</div>
                     <div className="text-xs">R{round.split('Round ')[1]}</div>
                   </th>
                 ))}
@@ -226,20 +226,20 @@ function FlipLeaderboard({ data, onOpenProducer }) {
             <tbody>
               {filtered.map((p, idx) => (
                 <tr key={p.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 10 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => onOpenProducer(p)}>
-                  <td className="p-4 font-bold sticky left-0 bg-[#111111] z-10">{idx + 1}</td>
-                  <td className="p-4 sticky left-16 bg-[#111111] z-10 font-semibold">{p.name}</td>
-                  <td className="p-4 sticky left-64 bg-[#111111] z-10 text-xs text-gray-400">{p.userId}</td>
-                  <td className="p-4 sticky left-80 bg-[#111111] z-10 font-semibold">{p.totalPoints}</td>
-                  <td className="p-4 sticky left-96 bg-[#111111] z-10 font-semibold">{p.weightedScore}</td>
-                  <td className="p-4 sticky left-[28rem] bg-[#111111] z-10 font-semibold">{p.totalWorks}</td>
+                  <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                  <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={p.name}>{p.name}</td>
+                  <td className="p-2 md:p-4 sticky left-36 md:left-44 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{p.userId.slice(-4)}</td>
+                  <td className="p-2 md:p-4 sticky left-52 md:left-64 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{p.totalPoints}</td>
+                  <td className="p-2 md:p-4 sticky left-64 md:left-80 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{p.weightedScore}</td>
+                  <td className="p-2 md:p-4 sticky left-76 md:left-96 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{p.totalWorks}</td>
                   {allRounds.map((round) => (
-                    <td key={round} className="p-4 text-center">
+                    <td key={round} className="p-1 md:p-4 text-center">
                       {p.rounds[round] ? (
-                        <span className="px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-sm">
+                        <span className="px-1 md:px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-xs">
                           {p.rounds[round]}
                         </span>
                       ) : (
-                        <span className="text-gray-500">-</span>
+                        <span className="text-gray-500 text-xs">-</span>
                       )}
                     </td>
                   ))}
