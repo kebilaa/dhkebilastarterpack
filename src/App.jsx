@@ -86,16 +86,31 @@ function Avatar({ label }) {
 function Home({ onNavigate, top3 }) {
   return (
     <div className="p-6 md:p-10">
-      <section className="min-h-[40vh] flex flex-col items-start justify-center gap-6">
-        <h1 className="text-4xl md:text-7xl font-extrabold leading-tight">
-          DIGITAL HUSTLAS
-        </h1>
-        <div className="flex flex-wrap gap-4">
-          <NeonButton onClick={() => onNavigate("flip")}>Смотреть рейтинг 31‑FLIP</NeonButton>
-          <NeonButton variant="pink" onClick={() => onNavigate("prod")}>Вступить в prod.by</NeonButton>
-          <NeonButton variant="alt" onClick={() => onNavigate("radio")}>Слушать Radio</NeonButton>
-          <NeonButton variant="alt" onClick={() => onNavigate("discord")}>Присоединиться к Discord</NeonButton>
+      <section className="relative min-h-[40vh] flex flex-col items-start justify-center gap-6 overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src={`${import.meta.env.BASE_URL}back.mp4`} type="video/mp4" />
+          </video>
+          {/* Shadow Overlay */}
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
+        
+        {/* Content */}
+        <div className="relative z-10">
+          <h1 className="text-4xl md:text-7xl font-extrabold leading-tight">
+            DIGITAL HUSTLAS
+          </h1>
+        </div>
+        
+        {/* Gradient Transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-black/80"></div>
       </section>
 
       {/* Twitch Stream Section */}
@@ -124,7 +139,7 @@ function Home({ onNavigate, top3 }) {
       </section>
 
       <section className="mt-14">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6">Топ‑3 прямо сейчас</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">Топ‑3 в 31-FLIP прямо сейчас</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {top3.map((p, i) => (
             <div key={p.id} className={cx("p-6 rounded-3xl border", glow(i === 0 ? 2 : i === 1 ? 1 : 3))} style={{
@@ -149,12 +164,11 @@ function Home({ onNavigate, top3 }) {
         </div>
       </section>
 
-      <section className="mt-16 grid grid-cols-1 md:grid-cols-5 gap-6">
+      <section className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
           { k: "flip", t: "31‑FLIP", d: "Турнир: раунды, таблица, профили" },
-          { k: "radio", t: "Radio", d: "Live YouTube поток и архив" },
+          { k: "media", t: "Media", d: "Radio, релизы, плейлисты" },
           { k: "prod", t: "prod.by", d: "Закрытое комьюнити по подписке" },
-          { k: "releases", t: "Releases", d: "Сборники и каталоги" },
           { k: "discord", t: "Discord", d: "Присоединяйся к комьюнити" },
         ].map((card, idx) => (
           <button key={card.k} onClick={() => onNavigate(card.k)} className={cx(
@@ -489,6 +503,172 @@ function Discord() {
   );
 }
 
+function Media() {
+  return (
+    <div className="p-6 md:p-10">
+      {/* Radio Section */}
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-4"><LivePill /><span className="text-gray-400">YouTube Live</span></div>
+        <h1 className="text-3xl md:text-5xl font-extrabold">Digital Hustlas Radio</h1>
+        <p className="mt-3 text-gray-300 max-w-2xl">Стримим отобранные модераторами треки и биты из закрытой группы prod.by.</p>
+
+        <div className={cx("mt-8 rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+          <div className="aspect-video w-full rounded-2xl bg-black/40 grid place-items-center text-gray-500">
+            <span>Здесь будет встраивание YouTube‑плеера</span>
+          </div>
+        </div>
+
+        <div className="mt-10 hidden">
+          <h2 className="text-2xl font-bold mb-4">Архив эфиров</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {new Array(6).fill(0).map((_, i) => (
+              <div key={i} className="p-4 rounded-3xl border" style={{ background: COLORS.card, borderColor: COLORS.border }}>
+                <div className="aspect-video rounded-2xl bg-black/40 mb-3" />
+                <div className="font-semibold">Выпуск #{i + 1}</div>
+                <div className="text-sm text-gray-400">Подборка жанров: rap, electronic</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Releases Section */}
+      <div className="mb-16">
+        <h1 className="text-3xl md:text-5xl font-extrabold">Releases</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          {[
+            { title: "PLAYBOOKIE PLAYMAKERAH vol.1", link: "https://band.link/playbookie", cover: "pp.jpg" },
+            { title: "Late Night Phone Calls vol.1", link: "https://band.link/late_night_phone", cover: "lnpc.jpg" },
+            { title: "Archive 1", link: "https://muz.lc/Archive1", cover: "arc.jpg" }
+          ].map((release, i) => (
+            <a key={i} href={release.link} target="_blank" rel="noopener noreferrer" className="block">
+              <div className={cx("p-4 rounded-3xl border hover:scale-105 transition-transform cursor-pointer", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+                <div className="aspect-square rounded-2xl mb-3 overflow-hidden">
+                  <img 
+                    src={`${import.meta.env.BASE_URL}${release.cover}`} 
+                    alt={release.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="font-semibold text-white hover:text-cyan-300 transition-colors">{release.title}</div>
+                <div className="text-sm text-gray-400">Digital Hustlas</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Playlists Section */}
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <LivePill />
+          <span className="text-gray-400">Music Platforms</span>
+        </div>
+        <h1 className="text-3xl md:text-5xl font-extrabold">Плейлисты</h1>
+        
+        <div className="mt-10">
+          <h2 className="text-2xl font-bold mb-6">Площадки</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                name: "SoundCloud",
+                icon: "🎵",
+                color: "#FF7700",
+                playlists: [
+                  { title: "Digital Hustlas Vol. 1", tracks: 24, duration: "1ч 23м", genre: "Rap/Electronic" },
+                  { title: "31-FLIP Season 1", tracks: 18, duration: "58м", genre: "Battle Beats" },
+                  { title: "prod.by Collabs", tracks: 31, duration: "2ч 15м", genre: "Mixed" }
+                ]
+              },
+              {
+                name: "Spotify",
+                icon: "💚",
+                color: "#1DB954",
+                playlists: [
+                  { title: "Digital Hustlas Official", tracks: 45, duration: "2ч 47м", genre: "Official Releases" },
+                  { title: "31-FLIP Highlights", tracks: 22, duration: "1ч 12м", genre: "Tournament" },
+                  { title: "Underground Beats", tracks: 38, duration: "2ч 33м", genre: "Experimental" }
+                ]
+              },
+              {
+                name: "Apple Music",
+                icon: "🍎",
+                color: "#FA243C",
+                playlists: [
+                  { title: "Digital Hustlas Collection", tracks: 52, duration: "3ч 18м", genre: "Complete" },
+                  { title: "31-FLIP Winners", tracks: 15, duration: "45м", genre: "Champions" },
+                  { title: "prod.by Showcase", tracks: 28, duration: "1ч 56м", genre: "Community" }
+                ]
+              },
+              {
+                name: "Яндекс.Музыка",
+                icon: "🎧",
+                color: "#FF0000",
+                playlists: [
+                  { title: "Digital Hustlas RU", tracks: 41, duration: "2ч 24м", genre: "Russian Edition" },
+                  { title: "31-FLIP Сезон 2", tracks: 19, duration: "1ч 3м", genre: "New Season" },
+                  { title: "prod.by Лучшее", tracks: 33, duration: "2ч 8м", genre: "Best Of" }
+                ]
+              }
+            ].map((platform, idx) => (
+              <div key={platform.name} className={cx("rounded-3xl border p-6", glow((idx % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">{platform.icon}</div>
+                  <div>
+                    <div className="text-xl font-bold">{platform.name}</div>
+                    <div className="text-sm text-gray-400">{platform.playlists.length} плейлистов</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  {platform.playlists.map((playlist, pIdx) => (
+                    <div key={pIdx} className="p-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] hover:border-cyan-300 transition-colors cursor-pointer">
+                      <div className="font-semibold text-sm mb-1">{playlist.title}</div>
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <span>{playlist.tracks} треков</span>
+                        <span>{playlist.duration}</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">{playlist.genre}</div>
+                    </div>
+                  ))}
+                </div>
+                
+                <button className="w-full mt-4 px-4 py-2 rounded-xl bg-[#0F0F10] border border-[#1F2937] text-sm hover:border-cyan-300 transition-colors">
+                  Открыть {platform.name}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-6">Популярные плейлисты</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: "31-FLIP Season 1 Winners", platform: "Spotify", tracks: 15, followers: "2.4K", cover: "🏆" },
+              { title: "Digital Hustlas Essentials", platform: "Apple Music", tracks: 52, followers: "1.8K", cover: "⭐" },
+              { title: "prod.by Community Mix", platform: "SoundCloud", tracks: 31, followers: "3.1K", cover: "💎" }
+            ].map((playlist, idx) => (
+              <div key={idx} className={cx("rounded-3xl border p-6", glow((idx % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+                <div className="aspect-square rounded-2xl bg-black/40 mb-4 grid place-items-center text-4xl border border-[#1F2937]">
+                  {playlist.cover}
+                </div>
+                <div className="font-bold text-lg mb-2">{playlist.title}</div>
+                <div className="text-sm text-gray-400 mb-3">{playlist.platform}</div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>{playlist.tracks} треков</span>
+                  <span className="text-cyan-300">{playlist.followers} подписчиков</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Playlists() {
   const platforms = [
     {
@@ -601,29 +781,35 @@ function Playlists() {
   );
 }
 
-function Profile() {
+function ProfileModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+  
   return (
-    <div className="p-6 md:p-10">
-      <h1 className="text-3xl md:text-5xl font-extrabold">Мой профиль</h1>
-      <div className="mt-6 flex items-center justify-center min-h-[40vh]">
-        <div className="text-2xl text-gray-300">Скоро.</div>
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className={cx("relative w-full md:w-[500px] max-h-[90vh] overflow-auto p-6 md:p-8 rounded-t-3xl md:rounded-3xl border", glow(2))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl md:text-3xl font-extrabold">Мой профиль</h1>
+          <NeonButton onClick={onClose}>Закрыть</NeonButton>
+        </div>
+        
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <div className="text-2xl text-gray-300">Скоро.</div>
+        </div>
       </div>
     </div>
   );
 }
 
-function Navbar({ page, onNavigate }) {
+function Navbar({ page, onNavigate, onOpenProfile }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const items = [
     { k: "home", t: "Home" },
     { k: "flip", t: "31‑FLIP" },
-    { k: "radio", t: "Radio" },
+    { k: "media", t: "Media" },
     { k: "prod", t: "prod.by" },
-    { k: "releases", t: "Releases" },
     { k: "discord", t: "Discord" },
-    { k: "playlists", t: "Плейлисты" },
-    { k: "profile", t: "Профиль" },
   ];
 
   const handleNavClick = (itemKey) => {
@@ -659,10 +845,22 @@ function Navbar({ page, onNavigate }) {
           ))}
         </nav>
 
+        {/* User Profile Button */}
+        <button
+          onClick={onOpenProfile}
+          className="p-2 rounded-xl border border-[#1F2937] hover:border-cyan-300 transition-colors"
+        >
+          <div className="w-6 h-6 flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+        </button>
+
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden ml-auto p-2 rounded-xl border border-[#1F2937] hover:border-cyan-300 transition-colors"
+          className="md:hidden ml-2 p-2 rounded-xl border border-[#1F2937] hover:border-cyan-300 transition-colors"
         >
           <div className="w-6 h-6 flex flex-col justify-center gap-1">
             <div className={`h-0.5 bg-white transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
@@ -699,6 +897,7 @@ export default function App() {
   const [page, setPage] = useState("home");
   const [producers, setProducers] = useState(realProducers);
   const [openProducer, setOpenProducer] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const top3 = useMemo(() => {
     return [...producers]
@@ -710,18 +909,12 @@ export default function App() {
     switch (page) {
       case "flip":
         return <FlipLeaderboard data={producers} onOpenProducer={(p) => setOpenProducer(p)} />;
-      case "radio":
-        return <Radio />;
+      case "media":
+        return <Media />;
       case "prod":
         return <ProdBy />;
-      case "releases":
-        return <Releases />;
       case "discord":
         return <Discord />;
-      case "playlists":
-        return <Playlists />;
-      case "profile":
-        return <Profile />;
       default:
         return <Home onNavigate={setPage} top3={top3} />;
     }
@@ -733,12 +926,13 @@ export default function App() {
         /* Extra subtle neon gradient backdrop */
         body { background: ${COLORS.bg}; }
       `}</style>
-      <Navbar page={page} onNavigate={setPage} />
+      <Navbar page={page} onNavigate={setPage} onOpenProfile={() => setProfileOpen(true)} />
       <main className="max-w-6xl mx-auto">{pageEl}</main>
       <footer className="max-w-6xl mx-auto px-6 py-10 text-sm text-gray-500">
         Digital Hustlas — 31‑FLIP • prod.by • Radio • Releases
       </footer>
       <ProducerModal producer={openProducer} onClose={() => setOpenProducer(null)} />
+      <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
 }
