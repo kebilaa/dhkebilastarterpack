@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { realProducers, eventData } from "./data.js";
 
 // DIGITAL HUSTLAS — Minimal Neon UI Prototype
 // Dark theme + neon accents, big type, minimal layout. Single-file SPA with tabs.
@@ -13,22 +14,11 @@ const COLORS = {
   neon3: "#FF007F", // pink
   neon4: "#00FF41", // neon green
   muted: "#9CA3AF",
-  card: "#111111",
+  card: "#111111", 
   border: "#1F2937",
 };
 
-// ---- REAL DATA ----
-const realProducers = [
-  { id: 1, name: "XN", userId: "689398266810728459", totalPoints: 32.6, weightedScore: 54.8, totalWorks: 47, rounds: { "1346482874857291838-Round 1": 33.5, "1346482874857291838-Round 2": 31.6, "1346482874857291838-Round 3": 34.6, "1346482874857291838-Round 4": 33.1, "1346482874857291838-Round 5": 29.8, "1347561694867488789-Round 1": 38.8, "1347561694867488789-Round 2": 30.8, "1347561694867488789-Round 3": 32.1, "1347561694867488789-Round 4": 34.8, "1349008508884090910-Round 1": 29.2, "1349008508884090910-Round 2": 36.2, "1349008508884090910-Round 3": 29.7, "1349008508884090910-Round 4": 34.4, "1352945465368510504-Round 1": 35.1, "1352945465368510504-Round 2": 35.8, "1352945465368510504-Round 3": 34.6, "1352945465368510504-Round 4": 38.7, "1355483362206154855-Round 1": 29.5, "1355483362206154855-Round 2": 32.2, "1355483362206154855-Round 3": 31.4, "1355483362206154855-Round 4": 34.5, "1355483362206154855-Round 5": 30.2, "1355483362206154855-Round 6": 31.6 } },
-  { id: 3, name: "Муса Дореус", userId: "422829998433632257", totalPoints: 31.5, weightedScore: 49.4, totalWorks: 36, rounds: { "1347561694867488789-Round 1": 28.9, "1347561694867488789-Round 2": 37.0, "1347561694867488789-Round 3": 30.5, "1347561694867488789-Round 4": 28.9, "1349008508884090910-Round 1": 32.0, "1349008508884090910-Round 2": 26.6, "1349008508884090910-Round 3": 28.3, "1349008508884090910-Round 4": 40.1, "1352945465368510504-Round 1": 34.8, "1352945465368510504-Round 2": 38.9, "1352945465368510504-Round 3": 34.1, "1352945465368510504-Round 4": 34.7, "1352945465368510504-Round 5": 31.7, "1352945465368510504-Round 6": 28.5, "1352945465368510504-Round 7": 33.3, "1355483362206154855-Round 1": 32.9, "1355483362206154855-Round 2": 35.8, "1355483362206154855-Round 3": 35.0, "1355483362206154855-Round 4": 32.3, "1355483362206154855-Round 5": 33.3 } },
-  { id: 4, name: "ONLYTHENEXT", userId: "729775540424278149", totalPoints: 32.7, weightedScore: 47.3, totalWorks: 27, rounds: { "1346482874857291838-Round 3": 36.8, "1347561694867488789-Round 1": 37.3, "1347561694867488789-Round 2": 38.7, "1347561694867488789-Round 3": 35.4, "1349008508884090910-Round 1": 29.0, "1349008508884090910-Round 2": 25.9, "1349008508884090910-Round 3": 32.3, "1349008508884090910-Round 4": 34.8, "1352945465368510504-Round 1": 38.5, "1352945465368510504-Round 2": 39.1, "1355483362206154855-Round 1": 31.3, "1355483362206154855-Round 2": 33.3, "1355483362206154855-Round 3": 28.8 } },
-  { id: 5, name: "Леон", userId: "692692176244834335", totalPoints: 29.0, weightedScore: 46.1, totalWorks: 38, rounds: { "1346482874857291838-Round 1": 33.4, "1346482874857291838-Round 3": 27.9, "1346482874857291838-Round 4": 30.0, "1346482874857291838-Round 5": 30.0, "1347561694867488789-Round 1": 35.4, "1347561694867488789-Round 2": 31.0, "1347561694867488789-Round 3": 33.0, "1349008508884090910-Round 1": 22.0, "1349008508884090910-Round 2": 33.0, "1349008508884090910-Round 3": 22.5, "1349008508884090910-Round 4": 28.1, "1352945465368510504-Round 1": 29.7, "1352945465368510504-Round 2": 32.7, "1352945465368510504-Round 3": 26.7, "1355483362206154855-Round 1": 25.3, "1355483362206154855-Round 2": 30.8, "1355483362206154855-Round 4": 30.8, "1355483362206154855-Round 6": 22.8 } },
-  { id: 6, name: "Tony Helfiger", userId: "777483643051835392", totalPoints: 29.3, weightedScore: 44.9, totalWorks: 33, rounds: { "1346482874857291838-Round 2": 23.0, "1346482874857291838-Round 4": 27.9, "1346482874857291838-Round 5": 36.2, "1346482874857291838-Round 6": 29.7, "1347561694867488789-Round 1": 24.7, "1347561694867488789-Round 2": 25.1, "1347561694867488789-Round 3": 26.8, "1347561694867488789-Round 4": 26.3, "1349008508884090910-Round 1": 31.7, "1349008508884090910-Round 2": 32.5, "1349008508884090910-Round 3": 23.2, "1349008508884090910-Round 4": 39.5, "1352945465368510504-Round 1": 28.3, "1352945465368510504-Round 2": 37.4, "1352945465368510504-Round 4": 35.3, "1355483362206154855-Round 2": 32.3, "1355483362206154855-Round 4": 23.4, "1355483362206154855-Round 6": 37.5 } },
-  { id: 7, name: "Slleem", userId: "624013571759800320", totalPoints: 29.2, weightedScore: 44.4, totalWorks: 32, rounds: { "1346482874857291838-Round 1": 31.3, "1346482874857291838-Round 3": 29.8, "1346482874857291838-Round 5": 33.0, "1347561694867488789-Round 2": 35.2, "1347561694867488789-Round 3": 28.5, "1347561694867488789-Round 4": 31.0, "1349008508884090910-Round 1": 29.7, "1349008508884090910-Round 3": 24.7, "1349008508884090910-Round 4": 25.8, "1352945465368510504-Round 1": 27.1, "1352945465368510504-Round 2": 27.8, "1352945465368510504-Round 3": 29.7, "1352945465368510504-Round 4": 34.3, "1352945465368510504-Round 5": 32.7, "1355483362206154855-Round 1": 33.1, "1355483362206154855-Round 2": 29.3, "1355483362206154855-Round 3": 27.5, "1355483362206154855-Round 5": 29.0 } },
-  { id: 8, name: "PLAYDADDY", userId: "279986249094397982", totalPoints: 31.3, weightedScore: 44.3, totalWorks: 25, rounds: { "1349008508884090910-Round 1": 35.3, "1349008508884090910-Round 2": 32.0, "1349008508884090910-Round 3": 34.4, "1349008508884090910-Round 4": 33.3, "1352945465368510504-Round 1": 34.0, "1352945465368510504-Round 2": 26.1, "1352945465368510504-Round 3": 33.5, "1352945465368510504-Round 4": 28.0, "1352945465368510504-Round 5": 30.7, "1352945465368510504-Round 6": 33.6 } },
-  { id: 9, name: "friedeyez?", userId: "305386727403683851", totalPoints: 30.0, weightedScore: 43.8, totalWorks: 28, rounds: { "1347561694867488789-Round 1": 27.7, "1347561694867488789-Round 2": 26.1, "1349008508884090910-Round 1": 31.8, "1349008508884090910-Round 2": 28.3, "1352945465368510504-Round 1": 37.3, "1352945465368510504-Round 2": 35.0, "1352945465368510504-Round 3": 32.3, "1352945465368510504-Round 4": 35.7, "1352945465368510504-Round 5": 27.8, "1352945465368510504-Round 6": 31.2, "1352945465368510504-Round 7": 27.9 } },
-  { id: 10, name: "Wistful Waves", userId: "298580088323309578", totalPoints: 29.8, weightedScore: 43.1, totalWorks: 27, rounds: { "1346482874857291838-Round 2": 31.4, "1346482874857291838-Round 3": 35.9, "1347561694867488789-Round 1": 36.8, "1347561694867488789-Round 2": 32.3, "1347561694867488789-Round 3": 35.4, "1347561694867488789-Round 4": 33.7, "1349008508884090910-Round 1": 27.2, "1349008508884090910-Round 2": 30.7, "1349008508884090910-Round 3": 30.7, "1349008508884090910-Round 4": 22.7, "1352945465368510504-Round 1": 35.4, "1352945465368510504-Round 3": 35.2, "1355483362206154855-Round 1": 22.0 } }
-];
+// Data imported from data.js
 
 function sum(arr) { return arr.reduce((a, b) => a + b, 0); }
 
@@ -292,60 +282,154 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   );
 }
 
-function ProducerModal({ producer, onClose }) {
-  if (!producer) return null;
+function ProducerModal({ producer, isOpen, onClose, onOpenEvent }) {
+  if (!isOpen || !producer) return null;
+
+  const events = useMemo(() => {
+    const eventMap = new Map();
+    Object.keys(producer.rounds).forEach(roundKey => {
+      const eventId = roundKey.split('-Round')[0];
+      if (!eventMap.has(eventId)) {
+        eventMap.set(eventId, {
+          id: eventId,
+          name: eventData[eventId]?.name || `Мероприятие ${eventId.slice(-4)}`,
+          rounds: []
+        });
+      }
+      eventMap.get(eventId).rounds.push({
+        name: roundKey,
+        score: producer.rounds[roundKey]
+      });
+    });
+    return Array.from(eventMap.values());
+  }, [producer]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className={cx("relative w-full md:w-[860px] max-h-[90vh] overflow-auto p-6 md:p-8 rounded-t-3xl md:rounded-3xl border", glow(2))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[#111111] border border-[#1F2937] flex items-center justify-center text-lg font-bold text-white">
-            {producer.name.charAt(0)}
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111111] rounded-3xl border border-[#1F2937] max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-[#1F2937] flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">{producer.name}</h2>
+            <div className="text-gray-400 text-sm">ID: {producer.userId}</div>
           </div>
-          <div className="flex-1">
-            <div className="text-2xl font-bold">{producer.name}</div>
-            <div className="text-sm text-gray-400">ID: {producer.userId} • Баллы: {producer.totalPoints} • Работ: {producer.totalWorks}</div>
-          </div>
-          <NeonButton onClick={onClose}>Закрыть</NeonButton>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-xl bg-[#0F0F10] border border-[#1F2937] hover:border-cyan-300 transition-colors"
+          >
+            ✕
+          </button>
         </div>
-
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="col-span-2">
-            <div className="text-lg font-semibold mb-2">Результаты по раундам</div>
-            <div className="flex gap-3 flex-wrap">
-              {Object.entries(producer.rounds).map(([round, score]) => (
-                <div key={round} className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
-                  <div className="text-xs text-gray-400">{round.split('-')[0].slice(-4)} R{round.split('Round ')[1]}</div>
-                  <div className="text-xl font-bold">{score} баллов</div>
-                </div>
-              ))}
+        
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="text-center p-4 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
+              <div className="text-2xl font-bold text-cyan-300">{producer.totalPoints}</div>
+              <div className="text-sm text-gray-400">Итого баллов</div>
             </div>
-
-            <div className="mt-6">
-              <div className="text-lg font-semibold mb-2">Статистика</div>
-              <div className="space-y-3 text-sm text-gray-300">
-                <div className="flex items-center justify-between">
-                  <span>Итого баллов:</span>
-                  <span className="font-bold">{producer.totalPoints}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Взвешенный балл:</span>
-                  <span className="font-bold">{producer.weightedScore}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Всего работ:</span>
-                  <span className="font-bold">{producer.totalWorks}</span>
-                </div>
-              </div>
+            <div className="text-center p-4 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
+              <div className="text-2xl font-bold text-purple-300">{producer.weightedScore}</div>
+              <div className="text-sm text-gray-400">Взвешенный балл</div>
+            </div>
+            <div className="text-center p-4 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
+              <div className="text-2xl font-bold text-pink-300">{producer.totalWorks}</div>
+              <div className="text-sm text-gray-400">Итого работ</div>
             </div>
           </div>
 
           <div>
-            <div className="text-lg font-semibold mb-2">Информация</div>
-            <div className="space-y-2 text-sm text-gray-300">
-              <div>Пользователь: <span className="font-bold">{producer.name}</span></div>
-              <div>ID: <span className="font-mono text-xs">{producer.userId}</span></div>
+            <h3 className="text-xl font-bold mb-4">История участий</h3>
+            <div className="space-y-4">
+              {events.map(event => (
+                <div key={event.id} className="p-4 rounded-2xl bg-[#0F0F10] border border-[#1F2937]">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold">{event.name}</h4>
+                    <button
+                      onClick={() => onOpenEvent(event.id)}
+                      className="px-3 py-1 rounded-lg bg-[#111111] border border-[#1F2937] text-sm hover:border-cyan-300 transition-colors"
+                    >
+                      Подробнее
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {event.rounds.map(round => (
+                      <div key={round.name} className="text-center p-2 rounded-lg bg-[#111111]">
+                        <div className="text-xs text-gray-400">R{round.name.split('Round ')[1]}</div>
+                        <div className="font-semibold">{round.score}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Event Modal Component
+function EventModal({ eventId, isOpen, onClose }) {
+  if (!isOpen || !eventId || !eventData[eventId]) return null;
+
+  const event = eventData[eventId];
+  const rounds = Object.keys(event.rounds);
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#111111] rounded-3xl border border-[#1F2937] max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-[#1F2937] flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">{event.name}</h2>
+            <div className="text-gray-400 text-sm">ID: {eventId}</div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-xl bg-[#0F0F10] border border-[#1F2937] hover:border-cyan-300 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+        
+        <div className="p-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-xs uppercase tracking-wider text-gray-400">
+                  <th className="p-3 sticky left-0 bg-[#111111] z-10">#</th>
+                  <th className="p-3 sticky left-12 bg-[#111111] z-10">Участник</th>
+                  <th className="p-3 sticky left-32 bg-[#111111] z-10">ID</th>
+                  {rounds.map(round => (
+                    <th key={round} className="p-3 text-center min-w-[80px]">
+                      <div className="text-xs">{round}</div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {event.rounds[rounds[0]]?.map((participant, idx) => (
+                  <tr key={participant.userId} className="border-t border-[#1F2937] hover:bg-[#0E0E10]">
+                    <td className="p-3 sticky left-0 bg-[#111111] z-10 font-bold text-sm">{idx + 1}</td>
+                    <td className="p-3 sticky left-12 bg-[#111111] z-10 font-semibold text-sm">{participant.name}</td>
+                    <td className="p-3 sticky left-32 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{participant.userId.slice(-4)}</td>
+                    {rounds.map(round => {
+                      const roundData = event.rounds[round].find(p => p.userId === participant.userId);
+                      return (
+                        <td key={round} className="p-3 text-center">
+                          {roundData ? (
+                            <span className="px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-sm">
+                              {roundData.score}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500 text-sm">-</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -898,6 +982,8 @@ export default function App() {
   const [producers, setProducers] = useState(realProducers);
   const [openProducer, setOpenProducer] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   const top3 = useMemo(() => {
     return [...producers]
@@ -920,6 +1006,11 @@ export default function App() {
     }
   }, [page, producers, top3]);
 
+  const handleOpenEvent = (eventId) => {
+    setSelectedEventId(eventId);
+    setEventModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen text-white" style={{ background: COLORS.bg }}>
       <style>{`
@@ -931,7 +1022,17 @@ export default function App() {
       <footer className="max-w-6xl mx-auto px-6 py-10 text-sm text-gray-500">
         Digital Hustlas — 31‑FLIP • prod.by • Radio • Releases
       </footer>
-      <ProducerModal producer={openProducer} onClose={() => setOpenProducer(null)} />
+      <ProducerModal 
+        producer={openProducer} 
+        isOpen={!!openProducer} 
+        onClose={() => setOpenProducer(null)} 
+        onOpenEvent={handleOpenEvent}
+      />
+      <EventModal 
+        eventId={selectedEventId} 
+        isOpen={eventModalOpen} 
+        onClose={() => setEventModalOpen(false)} 
+      />
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
