@@ -176,11 +176,90 @@ function Home({ onNavigate, top3 }) {
 
 function FlipLeaderboard({ data, onOpenProducer }) {
   const [query, setQuery] = useState("");
+  const [viewMode, setViewMode] = useState("participants"); // "participants" or "judges"
+  const [judgesData, setJudgesData] = useState([]);
+  const [participantsData, setParticipantsData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [participantHistoryModal, setParticipantHistoryModal] = useState({ isOpen: false, participant: null, history: [] });
+  const [judgeHistoryModal, setJudgeHistoryModal] = useState({ isOpen: false, judge: null, history: [] });
 
-  const filtered = useMemo(() => {
-    const list = data.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()));
-    return list.sort((a, b) => b.totalPoints - a.totalPoints);
-  }, [data, query]);
+  // Функция для загрузки данных судей
+  const fetchJudgesData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/judges-data');
+      const judgesData = await response.json();
+      setJudgesData(judgesData);
+    } catch (error) {
+      console.error('Ошибка при загрузке данных судей:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Функция для загрузки данных участников
+  const fetchParticipantsData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/participants-data');
+      const participantsData = await response.json();
+      setParticipantsData(participantsData);
+    } catch (error) {
+      console.error('Ошибка при загрузке данных участников:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Функция для загрузки истории участника
+  const fetchParticipantHistory = async (participantName) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3001/api/participant-history/${encodeURIComponent(participantName)}`);
+      const history = await response.json();
+      setParticipantHistoryModal({ isOpen: true, participant: participantName, history });
+    } catch (error) {
+      console.error('Ошибка при загрузке истории участника:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Функция для загрузки истории судьи
+  const fetchJudgeHistory = async (judgeName) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3001/api/judge-history/${encodeURIComponent(judgeName)}`);
+      const history = await response.json();
+      setJudgeHistoryModal({ isOpen: true, judge: judgeName, history });
+    } catch (error) {
+      console.error('Ошибка при загрузке истории судьи:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Загружаем данные при переключении режимов
+  useEffect(() => {
+    if (viewMode === "judges" && judgesData.length === 0) {
+      fetchJudgesData();
+    } else if (viewMode === "participants" && participantsData.length === 0) {
+      fetchParticipantsData();
+    }
+  }, [viewMode, judgesData.length, participantsData.length]);
+
+  const filteredParticipants = useMemo(() => {
+    const list = participantsData.filter((p) => 
+      p.participant_name.toLowerCase().includes(query.toLowerCase()) ||
+      (p.team_name && p.team_name.toLowerCase().includes(query.toLowerCase()))
+    );
+    return list.sort((a, b) => (b.avg_score || 0) - (a.avg_score || 0));
+  }, [participantsData, query]);
+
+  const filteredJudges = useMemo(() => {
+    const list = judgesData.filter((j) => j.judge_name.toLowerCase().includes(query.toLowerCase()));
+    return list.sort((a, b) => b.avg_given_score - a.avg_given_score);
+  }, [judgesData, query]);
 
   // Get all unique round keys for column headers
   const allRounds = useMemo(() => {
@@ -199,8 +278,33 @@ function FlipLeaderboard({ data, onOpenProducer }) {
           <div className="mt-2 text-gray-400 flex items-center gap-3"><LivePill /><span>Обновляется в реальном времени</span></div>
         </div>
         <div className="md:ml-auto flex items-center gap-3">
+          {/* Тоггл для переключения между участниками и судьями */}
+          <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937]">
+            <button
+              onClick={() => setViewMode("participants")}
+              className={cx(
+                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                viewMode === "participants"
+                  ? "bg-[#A020F0] text-white"
+                  : "text-gray-400 hover:text-white"
+              )}
+            >
+              Участники
+            </button>
+            <button
+              onClick={() => setViewMode("judges")}
+              className={cx(
+                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                viewMode === "judges"
+                  ? "bg-[#A020F0] text-white"
+                  : "text-gray-400 hover:text-white"
+              )}
+            >
+              Судьи
+            </button>
+          </div>
           <input
-            placeholder="Поиск продюсера"
+            placeholder={viewMode === "participants" ? "Поиск участника или команды" : "Поиск судьи"}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
@@ -213,42 +317,59 @@ function FlipLeaderboard({ data, onOpenProducer }) {
           <table className="w-full text-left">
             <thead>
               <tr className="text-xs md:text-sm uppercase tracking-wider text-gray-400">
-                <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
-                <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-24 md:w-32">Имя</th>
-                <th className="p-2 md:p-4 sticky left-36 md:left-44 bg-[#111111] z-10 w-16 md:w-20 text-xs">ID</th>
-                <th className="p-2 md:p-4 sticky left-52 md:left-64 bg-[#111111] z-10 w-12 md:w-16 text-xs">Баллы</th>
-                <th className="p-2 md:p-4 sticky left-64 md:left-80 bg-[#111111] z-10 w-12 md:w-16 text-xs">Вес</th>
-                <th className="p-2 md:p-4 sticky left-76 md:left-96 bg-[#111111] z-10 w-12 md:w-16 text-xs">Работ</th>
-                {allRounds.map((round, idx) => (
-                  <th key={round} className="p-1 md:p-4 min-w-[60px] md:min-w-[120px] text-center">
-                    <div className="text-xs md:text-sm">{round.split('-')[0].slice(-4)}</div>
-                    <div className="text-xs">R{round.split('Round ')[1]}</div>
-                  </th>
-                ))}
+                {viewMode === "participants" ? (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Имя участника</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-24 md:w-32 text-xs">Команда</th>
+                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">Средний балл</th>
+                  </>
+                ) : (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Имя судьи</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-20 md:w-24 text-xs">Средний балл</th>
+                    <th className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 w-16 md:w-20 text-xs">Оценок</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, idx) => (
-                <tr key={p.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 10 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => onOpenProducer(p)}>
-                  <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
-                  <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={p.name}>{p.name}</td>
-                  <td className="p-2 md:p-4 sticky left-36 md:left-44 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{p.userId.slice(-4)}</td>
-                  <td className="p-2 md:p-4 sticky left-52 md:left-64 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{p.totalPoints}</td>
-                  <td className="p-2 md:p-4 sticky left-64 md:left-80 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{p.weightedScore}</td>
-                  <td className="p-2 md:p-4 sticky left-76 md:left-96 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{p.totalWorks}</td>
-                  {allRounds.map((round) => (
-                    <td key={round} className="p-1 md:p-4 text-center">
-                      {p.rounds[round] ? (
-                        <span className="px-1 md:px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-xs">
-                          {p.rounds[round]}
-                        </span>
-                      ) : (
-                        <span className="text-gray-500 text-xs">-</span>
-                      )}
+              {viewMode === "participants" ? (
+                loading ? (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-400">
+                      Загрузка данных участников...
                     </td>
-                  ))}
-                </tr>
-              ))}
+                  </tr>
+                ) : (
+                  filteredParticipants.map((participant, idx) => (
+                    <tr key={participant.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => fetchParticipantHistory(participant.participant_name)}>
+                      <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={participant.participant_name}>{participant.participant_name}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{participant.team_name || '-'}</td>
+                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{participant.avg_score || '-'}</td>
+                    </tr>
+                  ))
+                )
+              ) : (
+                loading ? (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-400">
+                      Загрузка данных судей...
+                    </td>
+                  </tr>
+                ) : (
+                  filteredJudges.map((judge, idx) => (
+                    <tr key={judge.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => fetchJudgeHistory(judge.judge_name)}>
+                      <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={judge.judge_name}>{judge.judge_name}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{judge.avg_given_score}</td>
+                      <td className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{judge.judged_rows}</td>
+                    </tr>
+                  ))
+                )
+              )}
             </tbody>
           </table>
         </div>
@@ -278,6 +399,113 @@ function FlipLeaderboard({ data, onOpenProducer }) {
           <div className="text-gray-300 text-sm">Сезон 1: победитель — Bytewave. Полная статистика и треки доступны в архиве.</div>
         </div>
       </div>
+
+      {/* Модальное окно истории участника */}
+      {participantHistoryModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111111] rounded-3xl border border-[#1F2937] max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b border-[#1F2937] flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">История участия</h2>
+                <p className="text-gray-400 mt-1">{participantHistoryModal.participant}</p>
+              </div>
+              <button
+                onClick={() => setParticipantHistoryModal({ isOpen: false, participant: null, history: [] })}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {participantHistoryModal.history.length === 0 ? (
+                <div className="text-center text-gray-400 py-8">История участия не найдена</div>
+              ) : (
+                <div className="space-y-4">
+                  {participantHistoryModal.history.map((entry, idx) => (
+                    <div key={idx} className="bg-[#0F0F10] rounded-2xl p-4 border border-[#1F2937]">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                          <div className="font-semibold text-lg">Событие {entry.event_id.toString().slice(-4)}</div>
+                          <div className="text-sm text-gray-400">Раунд {entry.round}</div>
+                          <div className="text-sm text-gray-400">Дата: {entry.event_date}</div>
+                        </div>
+                        <div className="flex flex-col md:items-end gap-2">
+                          {entry.avg_score && (
+                            <div className="text-2xl font-bold text-[#A020F0]">{entry.avg_score}</div>
+                          )}
+                          <div className="text-sm text-gray-400">
+                            {entry.judges_count} судей: {entry.judges}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно истории судьи */}
+      {judgeHistoryModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111111] rounded-3xl border border-[#1F2937] max-w-6xl w-full max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b border-[#1F2937] flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold">История судейства</h2>
+                <p className="text-gray-400 mt-1">{judgeHistoryModal.judge}</p>
+              </div>
+              <button
+                onClick={() => setJudgeHistoryModal({ isOpen: false, judge: null, history: [] })}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {judgeHistoryModal.history.length === 0 ? (
+                <div className="text-center text-gray-400 py-8">История судейства не найдена</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="text-xs uppercase tracking-wider text-gray-400 border-b border-[#1F2937]">
+                        <th className="p-3">Событие</th>
+                        <th className="p-3">Раунд</th>
+                        <th className="p-3">Дата</th>
+                        <th className="p-3">Время</th>
+                        <th className="p-3">Балл</th>
+                        <th className="p-3">K1</th>
+                        <th className="p-3">K2</th>
+                        <th className="p-3">K3</th>
+                        <th className="p-3">K4</th>
+                        <th className="p-3">L</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {judgeHistoryModal.history.map((entry, idx) => (
+                        <tr key={idx} className="border-b border-[#1F2937] hover:bg-[#0F0F10]">
+                          <td className="p-3 font-mono text-sm">{entry.event_id.toString().slice(-4)}</td>
+                          <td className="p-3 text-sm">{entry.round}</td>
+                          <td className="p-3 text-sm text-gray-400">{entry.date}</td>
+                          <td className="p-3 text-sm text-gray-400">{entry.time}</td>
+                          <td className="p-3 font-semibold">{entry.score || '-'}</td>
+                          <td className="p-3 text-sm">{entry.k1 || '-'}</td>
+                          <td className="p-3 text-sm">{entry.k2 || '-'}</td>
+                          <td className="p-3 text-sm">{entry.k3 || '-'}</td>
+                          <td className="p-3 text-sm">{entry.k4 || '-'}</td>
+                          <td className="p-3 text-sm">{entry.l || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
