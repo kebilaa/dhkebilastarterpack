@@ -4,14 +4,32 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Middleware для продакшена
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+  credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Логирование для продакшена
+const morgan = require('morgan');
+app.use(morgan('combined'));
 
 // Подключение к базе данных
-const db = new Database('/home/ubuntu/ProdBy/database.db');
+const dbPath = process.env.DATABASE_PATH || '/home/ubuntu/ProdBy/database.db';
+const db = new Database(dbPath);
+
+// Проверка подключения к БД
+try {
+  db.prepare("SELECT 1").get();
+  console.log('✅ База данных подключена успешно');
+} catch (error) {
+  console.error('❌ Ошибка подключения к базе данных:', error);
+  process.exit(1);
+}
 
 // Функция для получения данных турнира 31-flip
 function getFlipData() {
@@ -314,11 +332,48 @@ app.get('/api/judge-history/:name', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'API сервер работает' });
+  res.json({ 
+    status: 'OK', 
+    message: 'API сервер работает',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Обработка ошибок для продакшена
+app.use((err, req, res, next) => {
+  console.error('Ошибка сервера:', err);
+  res.status(500).json({ 
+    error: 'Внутренняя ошибка сервера',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Обработка 404
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    error: 'Маршрут не найден',
+    path: req.originalUrl,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('Получен SIGTERM, завершение работы...');
+  db.close();
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('Получен SIGINT, завершение работы...');
+  db.close();
+  process.exit(0);
 });
 
 // Запуск сервера
-app.listen(PORT, () => {
-  console.log(`API сервер запущен на порту ${PORT}`);
-  console.log(`Доступен по адресу: http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 API сервер запущен на порту ${PORT}`);
+  console.log(`🌐 Доступен по адресу: http://0.0.0.0:${PORT}`);
+  console.log(`📊 Health check: http://0.0.0.0:${PORT}/api/health`);
 });
