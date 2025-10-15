@@ -66,9 +66,9 @@ function getFlipData() {
           SELECT 
             participant_name as name,
             participant_id as userId,
-            (k1 + k2 + k3 + k4 + l + t1 + t2 + t3 + t4 + t5 + t6 + t7 + tl) as score
+            (k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) as score
           FROM Scores 
-          WHERE event_id = ? AND round = ? AND score > 0
+          WHERE event_id = ? AND round = ? AND (k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) > 0
           ORDER BY score DESC
         `).all(eventId, round.round);
 
@@ -86,11 +86,11 @@ function getFlipData() {
         SELECT 
           participant_name as name,
           participant_id as userId,
-          SUM(k1 + k2 + k3 + k4 + l + t1 + t2 + t3 + t4 + t5 + t6 + t7 + tl) as totalPoints,
+          SUM(k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) as totalPoints,
           COUNT(*) as totalWorks,
-          AVG(k1 + k2 + k3 + k4 + l + t1 + t2 + t3 + t4 + t5 + t6 + t7 + tl) as avgScore
+          AVG(k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) as avgScore
         FROM Scores 
-        WHERE event_id = ? AND (k1 + k2 + k3 + k4 + l + t1 + t2 + t3 + t4 + t5 + t6 + t7 + tl) > 0
+        WHERE event_id = ? AND (k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) > 0
         GROUP BY participant_id, participant_name
         ORDER BY totalPoints DESC
       `).all(eventId);
@@ -124,9 +124,9 @@ function getFlipData() {
         SELECT 
           event_id,
           round,
-          (k1 + k2 + k3 + k4 + l + t1 + t2 + t3 + t4 + t5 + t6 + t7 + tl) as score
+          (k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) as score
         FROM Scores 
-        WHERE participant_id = ? AND (k1 + k2 + k3 + k4 + l + t1 + t2 + t3 + t4 + t5 + t6 + t7 + tl) > 0
+        WHERE participant_id = ? AND (k1 + k2 + k3 + k4 + COALESCE(l, 0) + t1 + t2 + t3 + t4 + t5 + t6 + t7 + COALESCE(tl, 0)) > 0
         ORDER BY event_id, round
       `).all(producer.userId);
 
@@ -187,20 +187,35 @@ function getParticipantsData() {
       SELECT
         u.user_name AS participant_name,
         u.user_team_name AS team_name,
+        u.kall,
+        u.tall,
+        u.user_team_wins,
+        u.user_team_games,
+        u.user_solo_wins,
+        u.user_solo_games,
         ROUND(AVG((s.k1 + s.k2 + s.k3 + s.k4 + COALESCE(s.l, 0)) /
-                  (4 + CASE WHEN s.l IS NOT NULL THEN 1 ELSE 0 END)), 2) AS avg_score
+                  (4 + CASE WHEN s.l IS NOT NULL THEN 1 ELSE 0 END)), 2) AS avg_main_score,
+        ROUND(AVG((s.t1 + s.t2 + s.t3 + s.t4 + s.t5 + s.t6 + s.t7 + COALESCE(s.tl, 0)) /
+                  (7 + CASE WHEN s.tl IS NOT NULL THEN 1 ELSE 0 END)), 2) AS avg_team_score
       FROM Users u
-      LEFT JOIN Scores s
-          ON s."participant _id" = u.user_id
-      GROUP BY u.user_name, u.user_team_name
-      ORDER BY avg_score DESC
+      LEFT JOIN Scores s ON s."participant _id" = u.user_id
+      GROUP BY u.user_id, u.user_name, u.user_team_name
+      ORDER BY COALESCE(u.kall, 0) + COALESCE(u.tall, 0) DESC
     `).all();
 
     return participants.map((participant, index) => ({
       id: index + 1,
       participant_name: participant.participant_name,
       team_name: participant.team_name,
-      avg_score: participant.avg_score
+      kall: participant.kall || 0,
+      tall: participant.tall || 0,
+      user_team_wins: participant.user_team_wins || 0,
+      user_team_games: participant.user_team_games || 0,
+      user_solo_wins: participant.user_solo_wins || 0,
+      user_solo_games: participant.user_solo_games || 0,
+      avg_main_score: participant.avg_main_score || 0,
+      avg_team_score: participant.avg_team_score || 0,
+      total_score: (participant.kall || 0) + (participant.tall || 0)
     }));
   } catch (error) {
     console.error('Ошибка при получении данных участников:', error);
@@ -224,6 +239,63 @@ app.get('/api/judges-data', (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Ошибка API судей:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
+
+// Функция для получения данных команд
+function getTeamsData() {
+  try {
+    const teams = db.prepare(`
+      SELECT
+        t.team_name,
+        t.t1,
+        t.t2,
+        t.t3,
+        t.t4,
+        t.t5,
+        t.t6,
+        t.t7,
+        t.tl,
+        t.tall,
+        t.team_wins,
+        t.team_games,
+        COUNT(DISTINCT u.user_id) as members_count
+      FROM Teams t
+      LEFT JOIN Users u ON u.user_team_name = t.team_name
+      GROUP BY t.team_id, t.team_name
+      ORDER BY COALESCE(t.tall, 0) DESC
+    `).all();
+
+    return teams.map((team, index) => ({
+      id: index + 1,
+      team_name: team.team_name,
+      t1: team.t1 || 0,
+      t2: team.t2 || 0,
+      t3: team.t3 || 0,
+      t4: team.t4 || 0,
+      t5: team.t5 || 0,
+      t6: team.t6 || 0,
+      t7: team.t7 || 0,
+      tl: team.tl || 0,
+      tall: team.tall || 0,
+      team_wins: team.team_wins || 0,
+      team_games: team.team_games || 0,
+      members_count: team.members_count || 0,
+      win_rate: team.team_games > 0 ? Math.round((team.team_wins / team.team_games) * 100) / 100 : 0
+    }));
+  } catch (error) {
+    console.error('Ошибка при получении данных команд:', error);
+    return [];
+  }
+}
+
+app.get('/api/teams-data', (req, res) => {
+  try {
+    const data = getTeamsData();
+    res.json(data);
+  } catch (error) {
+    console.error('Ошибка API команд:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });

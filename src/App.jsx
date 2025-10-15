@@ -176,9 +176,10 @@ function Home({ onNavigate, top3 }) {
 
 function FlipLeaderboard({ data, onOpenProducer }) {
   const [query, setQuery] = useState("");
-  const [viewMode, setViewMode] = useState("participants"); // "participants" or "judges"
+  const [viewMode, setViewMode] = useState("participants"); // "participants", "judges", or "teams"
   const [judgesData, setJudgesData] = useState([]);
   const [participantsData, setParticipantsData] = useState([]);
+  const [teamsData, setTeamsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [participantHistoryModal, setParticipantHistoryModal] = useState({ isOpen: false, participant: null, history: [] });
   const [judgeHistoryModal, setJudgeHistoryModal] = useState({ isOpen: false, judge: null, history: [] });
@@ -206,6 +207,20 @@ function FlipLeaderboard({ data, onOpenProducer }) {
       setParticipantsData(participantsData);
     } catch (error) {
       console.error('Ошибка при загрузке данных участников:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Функция для загрузки данных команд
+  const fetchTeamsData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/teams-data');
+      const teamsData = await response.json();
+      setTeamsData(teamsData);
+    } catch (error) {
+      console.error('Ошибка при загрузке данных команд:', error);
     } finally {
       setLoading(false);
     }
@@ -245,8 +260,10 @@ function FlipLeaderboard({ data, onOpenProducer }) {
       fetchJudgesData();
     } else if (viewMode === "participants" && participantsData.length === 0) {
       fetchParticipantsData();
+    } else if (viewMode === "teams" && teamsData.length === 0) {
+      fetchTeamsData();
     }
-  }, [viewMode, judgesData.length, participantsData.length]);
+  }, [viewMode, judgesData.length, participantsData.length, teamsData.length]);
 
   const filteredParticipants = useMemo(() => {
     const list = participantsData.filter((p) => 
@@ -260,6 +277,13 @@ function FlipLeaderboard({ data, onOpenProducer }) {
     const list = judgesData.filter((j) => j.judge_name.toLowerCase().includes(query.toLowerCase()));
     return list.sort((a, b) => b.avg_given_score - a.avg_given_score);
   }, [judgesData, query]);
+
+  const filteredTeams = useMemo(() => {
+    const list = teamsData.filter((t) => 
+      t.team_name.toLowerCase().includes(query.toLowerCase())
+    );
+    return list.sort((a, b) => (b.tall || 0) - (a.tall || 0));
+  }, [teamsData, query]);
 
   // Get all unique round keys for column headers
   const allRounds = useMemo(() => {
@@ -278,7 +302,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
           <div className="mt-2 text-gray-400 flex items-center gap-3"><LivePill /><span>Обновляется в реальном времени</span></div>
         </div>
         <div className="md:ml-auto flex items-center gap-3">
-          {/* Тоггл для переключения между участниками и судьями */}
+          {/* Тоггл для переключения между участниками, судьями и командами */}
           <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937]">
             <button
               onClick={() => setViewMode("participants")}
@@ -290,6 +314,17 @@ function FlipLeaderboard({ data, onOpenProducer }) {
               )}
             >
               Участники
+            </button>
+            <button
+              onClick={() => setViewMode("teams")}
+              className={cx(
+                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                viewMode === "teams"
+                  ? "bg-[#A020F0] text-white"
+                  : "text-gray-400 hover:text-white"
+              )}
+            >
+              Команды
             </button>
             <button
               onClick={() => setViewMode("judges")}
@@ -304,7 +339,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
             </button>
           </div>
           <input
-            placeholder={viewMode === "participants" ? "Поиск участника или команды" : "Поиск судьи"}
+            placeholder={viewMode === "participants" ? "Поиск участника или команды" : viewMode === "teams" ? "Поиск команды" : "Поиск судьи"}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
@@ -322,7 +357,21 @@ function FlipLeaderboard({ data, onOpenProducer }) {
                     <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
                     <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Имя участника</th>
                     <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-24 md:w-32 text-xs">Команда</th>
-                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">Средний балл</th>
+                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">Main Score</th>
+                    <th className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 w-20 md:w-24 text-xs">Team Score</th>
+                    <th className="p-2 md:p-4 sticky left-108 md:left-140 bg-[#111111] z-10 w-20 md:w-24 text-xs">Solo Wins</th>
+                    <th className="p-2 md:p-4 sticky left-128 md:left-164 bg-[#111111] z-10 w-20 md:w-24 text-xs">Team Wins</th>
+                    <th className="p-2 md:p-4 sticky left-148 md:left-188 bg-[#111111] z-10 w-20 md:w-24 text-xs">Total Score</th>
+                  </>
+                ) : viewMode === "teams" ? (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Название команды</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-20 md:w-24 text-xs">Team Score</th>
+                    <th className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 w-16 md:w-20 text-xs">Побед</th>
+                    <th className="p-2 md:p-4 sticky left-80 md:left-104 bg-[#111111] z-10 w-16 md:w-20 text-xs">Игр</th>
+                    <th className="p-2 md:p-4 sticky left-96 md:left-124 bg-[#111111] z-10 w-16 md:w-20 text-xs">% Побед</th>
+                    <th className="p-2 md:p-4 sticky left-112 md:left-144 bg-[#111111] z-10 w-16 md:w-20 text-xs">Участников</th>
                   </>
                 ) : (
                   <>
@@ -348,7 +397,31 @@ function FlipLeaderboard({ data, onOpenProducer }) {
                       <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
                       <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={participant.participant_name}>{participant.participant_name}</td>
                       <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{participant.team_name || '-'}</td>
-                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{participant.avg_score || '-'}</td>
+                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-cyan-400">{participant.kall || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{participant.tall || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-108 md:left-140 bg-[#111111] z-10 text-xs text-gray-400">{participant.user_solo_wins || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-128 md:left-164 bg-[#111111] z-10 text-xs text-gray-400">{participant.user_team_wins || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-148 md:left-188 bg-[#111111] z-10 font-bold text-xs md:text-sm text-green-400">{participant.total_score || 0}</td>
+                    </tr>
+                  ))
+                )
+              ) : viewMode === "teams" ? (
+                loading ? (
+                  <tr>
+                    <td colSpan="7" className="p-8 text-center text-gray-400">
+                      Загрузка данных команд...
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTeams.map((team, idx) => (
+                    <tr key={team.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
+                      <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={team.team_name}>{team.team_name}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{team.tall || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 text-xs text-gray-400">{team.team_wins || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-80 md:left-104 bg-[#111111] z-10 text-xs text-gray-400">{team.team_games || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-96 md:left-124 bg-[#111111] z-10 text-xs text-green-400">{Math.round(team.win_rate * 100)}%</td>
+                      <td className="p-2 md:p-4 sticky left-112 md:left-144 bg-[#111111] z-10 text-xs text-gray-400">{team.members_count || 0}</td>
                     </tr>
                   ))
                 )
