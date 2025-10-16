@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { realProducers, eventData } from "./data.js";
 
+// API base URL - автоматически определяем на основе текущего хоста
+const API_BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001' 
+  : `http://${window.location.hostname}:3001`;
+
 // DIGITAL HUSTLAS — Minimal Neon UI Prototype
 // Dark theme + neon accents, big type, minimal layout. Single-file SPA with tabs.
 // Tailwind is available in canvas; no imports needed.
@@ -188,7 +193,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchJudgesData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/judges-data');
+      const response = await fetch(`${API_BASE_URL}/api/judges-data`);
       const judgesData = await response.json();
       setJudgesData(judgesData);
     } catch (error) {
@@ -202,7 +207,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchParticipantsData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/participants-data');
+      const response = await fetch(`${API_BASE_URL}/api/participants-data`);
       const participantsData = await response.json();
       setParticipantsData(participantsData);
     } catch (error) {
@@ -216,7 +221,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchTeamsData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/teams-data');
+      const response = await fetch(`${API_BASE_URL}/api/teams-data`);
       const teamsData = await response.json();
       setTeamsData(teamsData);
     } catch (error) {
@@ -230,7 +235,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchParticipantHistory = async (participantName) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/participant-history/${encodeURIComponent(participantName)}`);
+      const response = await fetch(`${API_BASE_URL}/api/participant-history/${encodeURIComponent(participantName)}`);
       const history = await response.json();
       setParticipantHistoryModal({ isOpen: true, participant: participantName, history });
     } catch (error) {
@@ -244,7 +249,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchJudgeHistory = async (judgeName) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/judge-history/${encodeURIComponent(judgeName)}`);
+      const response = await fetch(`${API_BASE_URL}/api/judge-history/${encodeURIComponent(judgeName)}`);
       const history = await response.json();
       setJudgeHistoryModal({ isOpen: true, judge: judgeName, history });
     } catch (error) {
