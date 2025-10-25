@@ -181,37 +181,39 @@ function Home({ onNavigate, top3 }) {
 
 function FlipLeaderboard({ data, onOpenProducer }) {
   const [query, setQuery] = useState("");
-  const [viewMode, setViewMode] = useState("participants"); // "participants", "judges", or "teams"
-  const [judgesData, setJudgesData] = useState([]);
-  const [participantsData, setParticipantsData] = useState([]);
+  const [viewMode, setViewMode] = useState("free"); // "free", "main", "teams", "events"
+  const [fusersData, setFusersData] = useState([]);
+  const [usersData, setUsersData] = useState([]);
   const [teamsData, setTeamsData] = useState([]);
+  const [eventsData, setEventsData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [sortBy, setSortBy] = useState("l"); // "l" for individual, "tl" for team
   const [participantHistoryModal, setParticipantHistoryModal] = useState({ isOpen: false, participant: null, history: [] });
   const [judgeHistoryModal, setJudgeHistoryModal] = useState({ isOpen: false, judge: null, history: [] });
 
-  // Функция для загрузки данных судей
-  const fetchJudgesData = async () => {
+  // Функция для загрузки данных FUsers
+  const fetchFUsersData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/judges-data`);
-      const judgesData = await response.json();
-      setJudgesData(judgesData);
+      const response = await fetch(`${API_BASE_URL}/api/fusers-data`);
+      const fusersData = await response.json();
+      setFusersData(fusersData);
     } catch (error) {
-      console.error('Ошибка при загрузке данных судей:', error);
+      console.error('Ошибка при загрузке данных FUsers:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Функция для загрузки данных участников
-  const fetchParticipantsData = async () => {
+  // Функция для загрузки данных Users
+  const fetchUsersData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/participants-data`);
-      const participantsData = await response.json();
-      setParticipantsData(participantsData);
+      const response = await fetch(`${API_BASE_URL}/api/users-data`);
+      const usersData = await response.json();
+      setUsersData(usersData);
     } catch (error) {
-      console.error('Ошибка при загрузке данных участников:', error);
+      console.error('Ошибка при загрузке данных Users:', error);
     } finally {
       setLoading(false);
     }
@@ -226,6 +228,20 @@ function FlipLeaderboard({ data, onOpenProducer }) {
       setTeamsData(teamsData);
     } catch (error) {
       console.error('Ошибка при загрузке данных команд:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Функция для загрузки данных мероприятий
+  const fetchEventsData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/events-data`);
+      const eventsData = await response.json();
+      setEventsData(eventsData);
+    } catch (error) {
+      console.error('Ошибка при загрузке данных мероприятий:', error);
     } finally {
       setLoading(false);
     }
@@ -261,34 +277,63 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   // Загружаем данные при переключении режимов
   useEffect(() => {
-    if (viewMode === "judges" && judgesData.length === 0) {
-      fetchJudgesData();
-    } else if (viewMode === "participants" && participantsData.length === 0) {
-      fetchParticipantsData();
+    if (viewMode === "free" && fusersData.length === 0) {
+      fetchFUsersData();
+    } else if (viewMode === "main" && usersData.length === 0) {
+      fetchUsersData();
     } else if (viewMode === "teams" && teamsData.length === 0) {
       fetchTeamsData();
+    } else if (viewMode === "events" && eventsData.length === 0) {
+      fetchEventsData();
     }
-  }, [viewMode, judgesData.length, participantsData.length, teamsData.length]);
+  }, [viewMode, fusersData.length, usersData.length, teamsData.length, eventsData.length]);
 
-  const filteredParticipants = useMemo(() => {
-    const list = participantsData.filter((p) => 
-      p.participant_name.toLowerCase().includes(query.toLowerCase()) ||
-      (p.team_name && p.team_name.toLowerCase().includes(query.toLowerCase()))
+  // Загружаем данные FUsers при первой загрузке компонента
+  useEffect(() => {
+    if (fusersData.length === 0) {
+      fetchFUsersData();
+    }
+  }, []);
+
+  const filteredFUsers = useMemo(() => {
+    const list = fusersData.filter((u) => 
+      u.username.toLowerCase().includes(query.toLowerCase()) ||
+      (u.team_name && u.team_name.toLowerCase().includes(query.toLowerCase()))
     );
-    return list.sort((a, b) => (b.avg_score || 0) - (a.avg_score || 0));
-  }, [participantsData, query]);
+    return list.sort((a, b) => {
+      const aValue = sortBy === "l" ? a.l : a.tl;
+      const bValue = sortBy === "l" ? b.l : b.tl;
+      return bValue - aValue;
+    });
+  }, [fusersData, query, sortBy]);
 
-  const filteredJudges = useMemo(() => {
-    const list = judgesData.filter((j) => j.judge_name.toLowerCase().includes(query.toLowerCase()));
-    return list.sort((a, b) => b.avg_given_score - a.avg_given_score);
-  }, [judgesData, query]);
+  const filteredUsers = useMemo(() => {
+    const list = usersData.filter((u) => 
+      u.user_name.toLowerCase().includes(query.toLowerCase()) ||
+      (u.team_name && u.team_name.toLowerCase().includes(query.toLowerCase()))
+    );
+    return list.sort((a, b) => {
+      const aValue = sortBy === "l" ? a.l : a.tl;
+      const bValue = sortBy === "l" ? b.l : b.tl;
+      return bValue - aValue;
+    });
+  }, [usersData, query, sortBy]);
 
   const filteredTeams = useMemo(() => {
     const list = teamsData.filter((t) => 
       t.team_name.toLowerCase().includes(query.toLowerCase())
     );
-    return list.sort((a, b) => (b.tall || 0) - (a.tall || 0));
+    return list.sort((a, b) => (b.team_wins || 0) - (a.team_wins || 0));
   }, [teamsData, query]);
+
+  const filteredEvents = useMemo(() => {
+    const list = eventsData.filter((e) => 
+      e.date.toLowerCase().includes(query.toLowerCase()) ||
+      e.game_type_name.toLowerCase().includes(query.toLowerCase()) ||
+      e.winner.toLowerCase().includes(query.toLowerCase())
+    );
+    return list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [eventsData, query]);
 
   // Get all unique round keys for column headers
   const allRounds = useMemo(() => {
@@ -301,29 +346,42 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   return (
     <div className="p-6 md:p-10">
-      <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6 mb-6">
+      <div className="flex flex-col gap-6 mb-6">
+        {/* Заголовок */}
         <div>
-          <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">31‑FLIP — Таблица</h1>
+          <h1 className="text-3xl md:text-5xl font-extrabold whitespace-nowrap">31‑FLIP — Таблица</h1>
           <div className="mt-2 text-gray-400 flex items-center gap-3"><LivePill /><span>Обновляется в реальном времени</span></div>
         </div>
-        <div className="md:ml-auto flex items-center gap-3">
-          {/* Тоггл для переключения между участниками, судьями и командами */}
+        
+        {/* Блок переключателей вкладок */}
+        <div className="flex justify-between items-center">
           <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937]">
             <button
-              onClick={() => setViewMode("participants")}
+              onClick={() => setViewMode("free")}
               className={cx(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
-                viewMode === "participants"
+                "px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
+                viewMode === "free"
                   ? "bg-[#A020F0] text-white"
                   : "text-gray-400 hover:text-white"
               )}
             >
-              Участники
+              Статистика Free
+            </button>
+            <button
+              onClick={() => setViewMode("main")}
+              className={cx(
+                "px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
+                viewMode === "main"
+                  ? "bg-[#A020F0] text-white"
+                  : "text-gray-400 hover:text-white"
+              )}
+            >
+              Статистика Main
             </button>
             <button
               onClick={() => setViewMode("teams")}
               className={cx(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                "px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
                 viewMode === "teams"
                   ? "bg-[#A020F0] text-white"
                   : "text-gray-400 hover:text-white"
@@ -332,19 +390,53 @@ function FlipLeaderboard({ data, onOpenProducer }) {
               Команды
             </button>
             <button
-              onClick={() => setViewMode("judges")}
+              onClick={() => setViewMode("events")}
               className={cx(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
-                viewMode === "judges"
+                "px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
+                viewMode === "events"
                   ? "bg-[#A020F0] text-white"
                   : "text-gray-400 hover:text-white"
               )}
             >
-              Судьи
+              Мероприятия
             </button>
           </div>
+          <div></div>
+        </div>
+        
+        {/* Переключатель сортировки и поиск */}
+        <div className="flex justify-between items-center">
+          {/* Переключатель сортировки для Free и Main */}
+          {(viewMode === "free" || viewMode === "main") && (
+            <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937]">
+              <button
+                onClick={() => setSortBy("l")}
+                className={cx(
+                  "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                  sortBy === "l"
+                    ? "bg-[#00FF41] text-black"
+                    : "text-gray-400 hover:text-white"
+                )}
+              >
+                Индивидуальные
+              </button>
+              <button
+                onClick={() => setSortBy("tl")}
+                className={cx(
+                  "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                  sortBy === "tl"
+                    ? "bg-[#00FF41] text-black"
+                    : "text-gray-400 hover:text-white"
+                )}
+              >
+                Командные
+              </button>
+            </div>
+          )}
+          
+          {/* Поиск */}
           <input
-            placeholder={viewMode === "participants" ? "Поиск участника или команды" : viewMode === "teams" ? "Поиск команды" : "Поиск судьи"}
+            placeholder="Поиск"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
@@ -357,16 +449,37 @@ function FlipLeaderboard({ data, onOpenProducer }) {
           <table className="w-full text-left">
             <thead>
               <tr className="text-xs md:text-sm uppercase tracking-wider text-gray-400">
-                {viewMode === "participants" ? (
+                {viewMode === "free" ? (
                   <>
                     <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
                     <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Имя участника</th>
                     <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-24 md:w-32 text-xs">Команда</th>
-                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">Main Score</th>
-                    <th className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 w-20 md:w-24 text-xs">Team Score</th>
-                    <th className="p-2 md:p-4 sticky left-108 md:left-140 bg-[#111111] z-10 w-20 md:w-24 text-xs">Solo Wins</th>
-                    <th className="p-2 md:p-4 sticky left-128 md:left-164 bg-[#111111] z-10 w-20 md:w-24 text-xs">Team Wins</th>
-                    <th className="p-2 md:p-4 sticky left-148 md:left-188 bg-[#111111] z-10 w-20 md:w-24 text-xs">Total Score</th>
+                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">L (Индив.)</th>
+                    <th className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 w-20 md:w-24 text-xs">TL (Команд.)</th>
+                  </>
+                ) : viewMode === "main" ? (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Имя участника</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-24 md:w-32 text-xs">Команда</th>
+                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">L (Индив.)</th>
+                    <th className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 w-20 md:w-24 text-xs">TL (Команд.)</th>
+                  </>
+                ) : viewMode === "teams" ? (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Название команды</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-20 md:w-24 text-xs">Побед</th>
+                    <th className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 w-16 md:w-20 text-xs">Игр</th>
+                    <th className="p-2 md:p-4 sticky left-80 md:left-104 bg-[#111111] z-10 w-16 md:w-20 text-xs">Tall</th>
+                  </>
+                ) : viewMode === "events" ? (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Дата</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-24 md:w-32 text-xs">Event ID</th>
+                    <th className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 w-20 md:w-24 text-xs">Тип</th>
+                    <th className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 w-20 md:w-24 text-xs">Победитель</th>
                   </>
                 ) : viewMode === "teams" ? (
                   <>
@@ -377,6 +490,22 @@ function FlipLeaderboard({ data, onOpenProducer }) {
                     <th className="p-2 md:p-4 sticky left-80 md:left-104 bg-[#111111] z-10 w-16 md:w-20 text-xs">Игр</th>
                     <th className="p-2 md:p-4 sticky left-96 md:left-124 bg-[#111111] z-10 w-16 md:w-20 text-xs">% Побед</th>
                     <th className="p-2 md:p-4 sticky left-112 md:left-144 bg-[#111111] z-10 w-16 md:w-20 text-xs">Участников</th>
+                  </>
+                ) : viewMode === "events" ? (
+                  <>
+                    <th className="p-2 md:p-4 sticky left-0 bg-[#111111] z-10 w-12">#</th>
+                    <th className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 w-32 md:w-48">Участник</th>
+                    <th className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 w-24 md:w-32 text-xs">Команда</th>
+                    {eventsData.events.map((event, idx) => (
+                      <th key={event.id} className="p-2 md:p-4 text-center w-20 md:w-24 text-xs" style={{ 
+                        position: 'sticky', 
+                        left: `${44 + (idx + 1) * 20}px`,
+                        backgroundColor: '#111111',
+                        zIndex: 10
+                      }}>
+                        {event.name}
+                      </th>
+                    ))}
                   </>
                 ) : (
                   <>
@@ -389,26 +518,119 @@ function FlipLeaderboard({ data, onOpenProducer }) {
               </tr>
             </thead>
             <tbody>
-              {viewMode === "participants" ? (
+              {viewMode === "free" ? (
                 loading ? (
                   <tr>
-                    <td colSpan="4" className="p-8 text-center text-gray-400">
+                    <td colSpan="5" className="p-8 text-center text-gray-400">
                       Загрузка данных участников...
                     </td>
                   </tr>
                 ) : (
-                  filteredParticipants.map((participant, idx) => (
-                    <tr key={participant.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => fetchParticipantHistory(participant.participant_name)}>
+                  filteredFUsers.map((user, idx) => (
+                    <tr key={user.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
                       <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
-                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={participant.participant_name}>{participant.participant_name}</td>
-                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{participant.team_name || '-'}</td>
-                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-cyan-400">{participant.kall || 0}</td>
-                      <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{participant.tall || 0}</td>
-                      <td className="p-2 md:p-4 sticky left-108 md:left-140 bg-[#111111] z-10 text-xs text-gray-400">{participant.user_solo_wins || 0}</td>
-                      <td className="p-2 md:p-4 sticky left-128 md:left-164 bg-[#111111] z-10 text-xs text-gray-400">{participant.user_team_wins || 0}</td>
-                      <td className="p-2 md:p-4 sticky left-148 md:left-188 bg-[#111111] z-10 font-bold text-xs md:text-sm text-green-400">{participant.total_score || 0}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={user.username}>{user.username}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{user.team_name}</td>
+                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-cyan-400">{user.l}</td>
+                      <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{user.tl}</td>
                     </tr>
                   ))
+                )
+              ) : viewMode === "main" ? (
+                loading ? (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-gray-400">
+                      Загрузка данных участников...
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((user, idx) => (
+                    <tr key={user.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
+                      <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={user.user_name}>{user.user_name}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{user.team_name}</td>
+                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-cyan-400">{user.l}</td>
+                      <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{user.tl}</td>
+                    </tr>
+                  ))
+                )
+              ) : viewMode === "teams" ? (
+                loading ? (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-400">
+                      Загрузка данных команд...
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTeams.map((team, idx) => (
+                    <tr key={team.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
+                      <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={team.team_name}>{team.team_name}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-green-400">{team.team_wins}</td>
+                      <td className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 text-xs text-gray-400">{team.team_games}</td>
+                      <td className="p-2 md:p-4 sticky left-80 md:left-104 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{team.tall}</td>
+                    </tr>
+                  ))
+                )
+              ) : viewMode === "events" ? (
+                loading ? (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-gray-400">
+                      Загрузка данных мероприятий...
+                    </td>
+                  </tr>
+                ) : (
+                  filteredEvents.flatMap((event, idx) => [
+                    // Основная строка мероприятия
+                    <tr key={`event-${event.id}`} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
+                      <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{event.date}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{event.id.toString().slice(-8)}</td>
+                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 text-xs text-cyan-400">{event.game_type_name}</td>
+                      <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 text-xs text-green-400">{event.winner}</td>
+                    </tr>,
+                    // Детали мероприятия
+                    <tr key={`details-${event.id}`} className="border-t border-[#1F2937] bg-[#0A0A0A]">
+                      <td colSpan="5" className="p-4">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-gray-300 mb-3">Участники и результаты</h3>
+                          
+                          {/* Таблица участников и раундов */}
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead>
+                                <tr className="text-xs uppercase tracking-wider text-gray-400 border-b border-[#1F2937]">
+                                  <th className="p-2 sticky left-0 bg-[#0A0A0A] z-10">Участник</th>
+                                  {event.rounds.map(round => (
+                                    <th key={round} className="p-2 text-center min-w-[80px]">
+                                      Раунд {round}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {event.participants.map((participant, pIdx) => (
+                                  <tr key={participant.name} className="border-b border-[#1F2937] hover:bg-[#0F0F10]">
+                                    <td className="p-2 sticky left-0 bg-[#0A0A0A] z-10 font-semibold text-sm">{participant.name}</td>
+                                    {event.rounds.map(round => {
+                                      const score = participant.scores[round] || 0;
+                                      return (
+                                        <td key={round} className="p-2 text-center">
+                                          <span className="px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-sm">
+                                            {score > 0 ? score : '-'}
+                                          </span>
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ])
                 )
               ) : viewMode === "teams" ? (
                 loading ? (
@@ -430,23 +652,72 @@ function FlipLeaderboard({ data, onOpenProducer }) {
                     </tr>
                   ))
                 )
-              ) : (
+              ) : viewMode === "events" ? (
                 loading ? (
                   <tr>
-                    <td colSpan="4" className="p-8 text-center text-gray-400">
-                      Загрузка данных судей...
+                    <td colSpan="5" className="p-8 text-center text-gray-400">
+                      Загрузка данных мероприятий...
                     </td>
                   </tr>
                 ) : (
-                  filteredJudges.map((judge, idx) => (
-                    <tr key={judge.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10] cursor-pointer", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))} onClick={() => fetchJudgeHistory(judge.judge_name)}>
+                  filteredEvents.flatMap((event, idx) => [
+                    // Основная строка мероприятия
+                    <tr key={`event-${event.id}`} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
                       <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
-                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={judge.judge_name}>{judge.judge_name}</td>
-                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{judge.avg_given_score}</td>
-                      <td className="p-2 md:p-4 sticky left-64 md:left-84 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{judge.judged_rows}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm">{event.date}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{event.id.toString().slice(-8)}</td>
+                      <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 text-xs text-cyan-400">{event.game_type_name}</td>
+                      <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 text-xs text-green-400">{event.winner}</td>
+                    </tr>,
+                    // Детали мероприятия
+                    <tr key={`details-${event.id}`} className="border-t border-[#1F2937] bg-[#0A0A0A]">
+                      <td colSpan="5" className="p-4">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-gray-300 mb-3">Участники и результаты</h3>
+                          
+                          {/* Таблица участников и раундов */}
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                              <thead>
+                                <tr className="text-xs uppercase tracking-wider text-gray-400 border-b border-[#1F2937]">
+                                  <th className="p-2 sticky left-0 bg-[#0A0A0A] z-10">Участник</th>
+                                  {event.rounds.map(round => (
+                                    <th key={round} className="p-2 text-center min-w-[80px]">
+                                      Раунд {round}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {event.participants.map((participant, pIdx) => (
+                                  <tr key={participant.name} className="border-b border-[#1F2937] hover:bg-[#0F0F10]">
+                                    <td className="p-2 sticky left-0 bg-[#0A0A0A] z-10 font-semibold text-sm">{participant.name}</td>
+                                    {event.rounds.map(round => {
+                                      const score = participant.scores[round] || 0;
+                                      return (
+                                        <td key={round} className="p-2 text-center">
+                                          <span className="px-2 py-1 rounded bg-[#0F0F10] border border-[#1F2937] text-sm">
+                                            {score > 0 ? score : '-'}
+                                          </span>
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
-                  ))
+                  ])
                 )
+              ) : (
+                <tr>
+                  <td colSpan="5" className="p-8 text-center text-gray-400">
+                    Выберите вкладку для просмотра данных.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
