@@ -1090,12 +1090,24 @@ function Radio() {
 function ProdBy() {
   return (
     <div className="p-6 md:p-10">
-      <h1 className="text-3xl md:text-5xl font-extrabold">prod.by</h1>
-      <p className="mt-3 text-gray-300 max-w-2xl">Ежемесячная подписка: доступ к закрытому чату, доступ к турнирам, киты, советы по звукорежиссуре и многое другое.</p>
-      <div className="mt-6 flex gap-4">
-        <a href="https://t.me/GetMunneyBot" target="_blank" rel="noopener noreferrer">
-          <NeonButton>Оформить подписку</NeonButton>
-        </a>
+      <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex-1">
+          <h1 className="text-3xl md:text-5xl font-extrabold">prod.by</h1>
+          <p className="mt-3 text-gray-300 max-w-2xl">Ежемесячная подписка: доступ к закрытому чату, доступ к турнирам, киты, советы по звукорежиссуре и многое другое.</p>
+          <div className="mt-6 flex gap-4">
+            <a href="https://t.me/GetMunneyBot" target="_blank" rel="noopener noreferrer">
+              <NeonButton>Оформить подписку</NeonButton>
+            </a>
+          </div>
+        </div>
+        <div className="flex-1 max-w-md">
+          <img 
+            src={`${import.meta.env.BASE_URL}prod.by.png`} 
+            alt="prod.by" 
+            className="w-full h-auto rounded-3xl"
+            style={{ border: `1px solid ${COLORS.border}` }}
+          />
+        </div>
       </div>
 
       <div className="mt-10">
