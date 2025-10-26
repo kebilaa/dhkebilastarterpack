@@ -237,8 +237,10 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchEventsData = async () => {
     setLoading(true);
     try {
+      console.log('Загружаем данные мероприятий...');
       const response = await fetch(`${API_BASE_URL}/api/events-data`);
       const eventsData = await response.json();
+      console.log('Данные мероприятий загружены:', eventsData);
       setEventsData(eventsData);
     } catch (error) {
       console.error('Ошибка при загрузке данных мероприятий:', error);
