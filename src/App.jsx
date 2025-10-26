@@ -199,7 +199,9 @@ function FlipLeaderboard({ data, onOpenProducer }) {
       const response = await fetch(`${API_BASE_URL}/api/fusers-data?t=${Date.now()}`);
       const fusersData = await response.json();
       console.log('✅ Данные FUsers загружены:', fusersData.length, 'записей');
-      setFusersData(fusersData);
+      console.log('📊 Первая запись:', fusersData[0]);
+      setFusersData([]); // Очищаем сначала
+      setTimeout(() => setFusersData(fusersData), 100); // Устанавливаем новые данные
     } catch (error) {
       console.error('❌ Ошибка при загрузке данных FUsers:', error);
     } finally {
