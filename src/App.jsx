@@ -297,7 +297,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   const filteredFUsers = useMemo(() => {
     const list = fusersData.filter((u) => 
-      u.username.toLowerCase().includes(query.toLowerCase()) ||
+      (u.username && u.username.toLowerCase().includes(query.toLowerCase())) ||
       (u.team_name && u.team_name.toLowerCase().includes(query.toLowerCase()))
     );
     return list.sort((a, b) => {
@@ -309,7 +309,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   const filteredUsers = useMemo(() => {
     const list = usersData.filter((u) => 
-      u.user_name.toLowerCase().includes(query.toLowerCase()) ||
+      (u.user_name && u.user_name.toLowerCase().includes(query.toLowerCase())) ||
       (u.team_name && u.team_name.toLowerCase().includes(query.toLowerCase()))
     );
     return list.sort((a, b) => {
@@ -321,16 +321,16 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   const filteredTeams = useMemo(() => {
     const list = teamsData.filter((t) => 
-      t.team_name.toLowerCase().includes(query.toLowerCase())
+      (t.team_name && t.team_name.toLowerCase().includes(query.toLowerCase()))
     );
     return list.sort((a, b) => (b.team_wins || 0) - (a.team_wins || 0));
   }, [teamsData, query]);
 
   const filteredEvents = useMemo(() => {
     const list = eventsData.filter((e) => 
-      e.date.toLowerCase().includes(query.toLowerCase()) ||
-      e.game_type_name.toLowerCase().includes(query.toLowerCase()) ||
-      e.winner.toLowerCase().includes(query.toLowerCase())
+      (e.date && e.date.toLowerCase().includes(query.toLowerCase())) ||
+      (e.game_type_name && e.game_type_name.toLowerCase().includes(query.toLowerCase())) ||
+      (e.winner && e.winner.toLowerCase().includes(query.toLowerCase()))
     );
     return list.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [eventsData, query]);
