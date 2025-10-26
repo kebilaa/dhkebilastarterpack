@@ -1264,8 +1264,8 @@ function Media() {
         </div>
       </div>
 
-      {/* Playlists Section */}
-      <div>
+      {/* Playlists Section - Hidden */}
+      <div className="hidden">
         <div className="flex items-center gap-3 mb-4">
           <LivePill />
           <span className="text-gray-400">Music Platforms</span>
