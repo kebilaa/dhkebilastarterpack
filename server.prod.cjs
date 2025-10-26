@@ -19,7 +19,7 @@ const morgan = require('morgan');
 app.use(morgan('combined'));
 
 // Подключение к базе данных
-const dbPath = '/home/ubuntu/ProdBy/database.db';
+const dbPath = './ProdBy/database.db';
 const db = new Database(dbPath);
 
 // Проверка подключения к БД

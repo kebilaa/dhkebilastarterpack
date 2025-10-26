@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Подключение к базе данных
-const dbPath = '/home/ubuntu/ProdBy/database.db';
+const dbPath = './ProdBy/database.db';
 const db = new Database(dbPath);
 
 // Функция для получения данных турнира 31-flip
