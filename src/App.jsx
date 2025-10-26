@@ -195,7 +195,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchFUsersData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/fusers-data`);
+      const response = await fetch(`${API_BASE_URL}/api/fusers-data?t=${Date.now()}`);
       const fusersData = await response.json();
       setFusersData(fusersData);
     } catch (error) {
@@ -209,7 +209,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchUsersData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users-data`);
+      const response = await fetch(`${API_BASE_URL}/api/users-data?t=${Date.now()}`);
       const usersData = await response.json();
       setUsersData(usersData);
     } catch (error) {
@@ -223,7 +223,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchTeamsData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/teams-data`);
+      const response = await fetch(`${API_BASE_URL}/api/teams-data?t=${Date.now()}`);
       const teamsData = await response.json();
       setTeamsData(teamsData);
     } catch (error) {
@@ -238,7 +238,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
     setLoading(true);
     try {
       console.log('Загружаем данные мероприятий...');
-      const response = await fetch(`${API_BASE_URL}/api/events-data`);
+      const response = await fetch(`${API_BASE_URL}/api/events-data?t=${Date.now()}`);
       const eventsData = await response.json();
       console.log('Данные мероприятий загружены:', eventsData);
       setEventsData(eventsData);
@@ -296,6 +296,23 @@ function FlipLeaderboard({ data, onOpenProducer }) {
       fetchFUsersData();
     }
   }, []);
+
+  // Автоматическое обновление данных каждые 5 секунд
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (viewMode === "free") {
+        fetchFUsersData();
+      } else if (viewMode === "main") {
+        fetchUsersData();
+      } else if (viewMode === "teams") {
+        fetchTeamsData();
+      } else if (viewMode === "events") {
+        fetchEventsData();
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [viewMode]);
 
   const filteredFUsers = useMemo(() => {
     const list = fusersData.filter((u) => 
