@@ -249,40 +249,20 @@ function getTeamsData() {
     const teams = db.prepare(`
       SELECT
         t.team_name,
-        t.t1,
-        t.t2,
-        t.t3,
-        t.t4,
-        t.t5,
-        t.t6,
-        t.t7,
-        t.tl,
-        t.tall,
         t.team_wins,
         t.team_games,
-        COUNT(DISTINCT u.user_id) as members_count
+        t.tall
       FROM Teams t
-      LEFT JOIN Users u ON u.user_team_name = t.team_name
-      GROUP BY t.team_id, t.team_name
-      ORDER BY COALESCE(t.tall, 0) DESC
+      GROUP BY t.team_name
+      ORDER BY t.team_wins DESC
     `).all();
 
     return teams.map((team, index) => ({
       id: index + 1,
       team_name: team.team_name,
-      t1: team.t1 || 0,
-      t2: team.t2 || 0,
-      t3: team.t3 || 0,
-      t4: team.t4 || 0,
-      t5: team.t5 || 0,
-      t6: team.t6 || 0,
-      t7: team.t7 || 0,
-      tl: team.tl || 0,
-      tall: team.tall || 0,
       team_wins: team.team_wins || 0,
       team_games: team.team_games || 0,
-      members_count: team.members_count || 0,
-      win_rate: team.team_games > 0 ? Math.round((team.team_wins / team.team_games) * 100) / 100 : 0
+      tall: team.tall || 0
     }));
   } catch (error) {
     console.error('Ошибка при получении данных команд:', error);
@@ -296,6 +276,195 @@ app.get('/api/teams-data', (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Ошибка API команд:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
+
+// Функция для получения данных FUsers
+function getFUsersData() {
+  try {
+    const fusers = db.prepare(`
+      SELECT
+        user_name,
+        user_team_name,
+        l,
+        tl
+      FROM FUsers
+      ORDER BY l DESC
+    `).all();
+
+    return fusers.map((fuser, index) => ({
+      id: index + 1,
+      user_name: fuser.user_name,
+      user_team_name: fuser.user_team_name,
+      l: fuser.l || 0,
+      tl: fuser.tl || 0
+    }));
+  } catch (error) {
+    console.error('Ошибка при получении данных FUsers:', error);
+    return [];
+  }
+}
+
+// Функция для получения данных Users
+function getUsersData() {
+  try {
+    const users = db.prepare(`
+      SELECT
+        user_name,
+        user_team_name,
+        user_first_place,
+        user_second_place,
+        user_third_place,
+        user_solo_games,
+        l,
+        tl,
+        kall,
+        tall
+      FROM Users
+      ORDER BY kall DESC
+    `).all();
+
+    return users.map((user, index) => ({
+      id: index + 1,
+      user_name: user.user_name,
+      user_team_name: user.user_team_name,
+      user_first_place: user.user_first_place || 0,
+      user_second_place: user.user_second_place || 0,
+      user_third_place: user.user_third_place || 0,
+      user_solo_games: user.user_solo_games || 0,
+      l: user.l || 0,
+      tl: user.tl || 0,
+      kall: user.kall || 0,
+      tall: user.tall || 0
+    }));
+  } catch (error) {
+    console.error('Ошибка при получении данных Users:', error);
+    return [];
+  }
+}
+
+// Функция для получения данных мероприятий
+function getEventsData() {
+  try {
+    const events = db.prepare(`
+      SELECT DISTINCT 
+        CAST(event_id AS TEXT) as event_id,
+        date,
+        game_type
+      FROM Scores 
+      ORDER BY date DESC, event_id DESC
+    `).all();
+
+    const eventsData = events.map(event => {
+      const gameTypeNames = {
+        1: 'main',
+        2: 'team main', 
+        3: 'free',
+        4: 'free team'
+      };
+
+      // Получаем участников для этого события
+      const participants = db.prepare(`
+        SELECT 
+          participant_name,
+          user_team_name,
+          round,
+          l,
+          t1, t2, t3, t4, t5, t6, t7, tl
+        FROM Scores 
+        WHERE event_id = ?
+        ORDER BY round, participant_name
+      `).all(event.event_id);
+
+      // Группируем по раундам
+      const rounds = [...new Set(participants.map(p => p.round))].sort();
+      
+      // Вычисляем победителя
+      let winner = 'Не определен';
+      let maxScore = -1;
+
+      // Группируем участников по имени для подсчета общих баллов
+      const participantTotals = {};
+      
+      participants.forEach(participant => {
+        const key = participant.participant_name;
+        if (!participantTotals[key]) {
+          participantTotals[key] = {
+            name: participant.participant_name,
+            team: participant.user_team_name,
+            totalScore: 0
+          };
+        }
+
+        let score = 0;
+        if (event.game_type === 1 || event.game_type === 3) {
+          score = participant.l || 0;
+        } else if (event.game_type === 2 || event.game_type === 4) {
+          score = (participant.t1 || 0) + (participant.t2 || 0) + (participant.t3 || 0) + 
+                  (participant.t4 || 0) + (participant.t5 || 0) + (participant.t6 || 0) + 
+                  (participant.t7 || 0) + (participant.tl || 0);
+        }
+
+        participantTotals[key].totalScore += score;
+      });
+
+      // Находим победителя
+      Object.values(participantTotals).forEach(participant => {
+        if (participant.totalScore > maxScore) {
+          maxScore = participant.totalScore;
+          winner = participant.team || participant.name;
+        }
+      });
+
+      return {
+        id: event.event_id,
+        date: event.date,
+        game_type: event.game_type,
+        game_type_name: gameTypeNames[event.game_type] || 'unknown',
+        winner: winner,
+        rounds: rounds.map(r => `Round ${r}`),
+        participants: Object.values(participantTotals).map(p => ({
+          name: p.name,
+          team: p.team,
+          totalScore: p.totalScore
+        }))
+      };
+    });
+
+    return eventsData;
+  } catch (error) {
+    console.error('Ошибка при получении данных мероприятий:', error);
+    return [];
+  }
+}
+
+app.get('/api/fusers-data', (req, res) => {
+  try {
+    const data = getFUsersData();
+    res.json(data);
+  } catch (error) {
+    console.error('Ошибка API FUsers:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
+
+app.get('/api/users-data', (req, res) => {
+  try {
+    const data = getUsersData();
+    res.json(data);
+  } catch (error) {
+    console.error('Ошибка API Users:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
+
+app.get('/api/events-data', (req, res) => {
+  try {
+    const data = getEventsData();
+    res.json(data);
+  } catch (error) {
+    console.error('Ошибка API мероприятий:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });

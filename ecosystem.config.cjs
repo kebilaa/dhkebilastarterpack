@@ -7,8 +7,7 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
-        PORT: 3001,
-        DATABASE_PATH: '/home/ubuntu/ProdBy/database.db'
+        PORT: 3001
       },
       log_file: './logs/api.log',
       out_file: './logs/api-out.log',
