@@ -1174,7 +1174,8 @@ function Discord() {
         </a>
       </div>
 
-      <div className="mt-10">
+      {/* Discord Widget - Hidden */}
+      <div className="mt-10 hidden">
         <h2 className="text-2xl font-bold mb-6">Discord виджет</h2>
         <div className={cx("rounded-3xl border p-6", glow(2))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
           <div className="aspect-video w-full rounded-2xl bg-black/40 grid place-items-center text-gray-500 border border-[#1F2937]">
@@ -1197,18 +1198,28 @@ function Discord() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-        {[
-          { title: "Общие каналы", desc: "Комнаты для мероприятий" },
-          { title: "Playground", desc: "Место для тренировок" },
-          { title: "Games", desc: "Комната для тех кто играет в игры" },
-          { title: "Radio", desc: "24/7 трансляция лучших треков из prod.by" }
-        ].map((channel, i) => (
-          <div key={i} className={cx("p-6 rounded-3xl border", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-            <div className="text-xl font-bold mb-2">{channel.title}</div>
-            <div className="text-gray-300 text-sm">{channel.desc}</div>
-          </div>
-        ))}
+      <div className="flex flex-col md:flex-row gap-8 mt-10">
+        <div className="flex-1 max-w-md">
+          <img 
+            src={`${import.meta.env.BASE_URL}Discord.png`} 
+            alt="Discord" 
+            className="w-full h-auto rounded-3xl"
+            style={{ border: `1px solid ${COLORS.border}` }}
+          />
+        </div>
+        <div className="flex-1 space-y-4">
+          {[
+            { title: "Общие каналы", desc: "Комнаты для мероприятий" },
+            { title: "Playground", desc: "Место для тренировок" },
+            { title: "Games", desc: "Комната для тех кто играет в игры" },
+            { title: "Radio", desc: "24/7 трансляция лучших треков из prod.by" }
+          ].map((channel, i) => (
+            <div key={i} className={cx("p-6 rounded-3xl border", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
+              <div className="text-xl font-bold mb-2">{channel.title}</div>
+              <div className="text-gray-300 text-sm">{channel.desc}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
