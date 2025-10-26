@@ -195,11 +195,13 @@ function FlipLeaderboard({ data, onOpenProducer }) {
   const fetchFUsersData = async () => {
     setLoading(true);
     try {
+      console.log('🔄 Загружаем данные FUsers...');
       const response = await fetch(`${API_BASE_URL}/api/fusers-data?t=${Date.now()}`);
       const fusersData = await response.json();
+      console.log('✅ Данные FUsers загружены:', fusersData.length, 'записей');
       setFusersData(fusersData);
     } catch (error) {
-      console.error('Ошибка при загрузке данных FUsers:', error);
+      console.error('❌ Ошибка при загрузке данных FUsers:', error);
     } finally {
       setLoading(false);
     }
@@ -279,16 +281,16 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   // Загружаем данные при переключении режимов
   useEffect(() => {
-    if (viewMode === "free" && fusersData.length === 0) {
+    if (viewMode === "free") {
       fetchFUsersData();
-    } else if (viewMode === "main" && usersData.length === 0) {
+    } else if (viewMode === "main") {
       fetchUsersData();
-    } else if (viewMode === "teams" && teamsData.length === 0) {
+    } else if (viewMode === "teams") {
       fetchTeamsData();
-    } else if (viewMode === "events" && eventsData.length === 0) {
+    } else if (viewMode === "events") {
       fetchEventsData();
     }
-  }, [viewMode, fusersData.length, usersData.length, teamsData.length, eventsData.length]);
+  }, [viewMode]);
 
   // Загружаем данные FUsers при первой загрузке компонента
   useEffect(() => {
@@ -436,13 +438,26 @@ function FlipLeaderboard({ data, onOpenProducer }) {
             </div>
           )}
           
-          {/* Поиск */}
-          <input
-            placeholder="Поиск"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
-          />
+             {/* Поиск */}
+             <div className="flex items-center gap-3">
+               <input
+                 placeholder="Поиск"
+                 value={query}
+                 onChange={(e) => setQuery(e.target.value)}
+                 className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
+               />
+               <button
+                 onClick={() => {
+                   if (viewMode === "free") fetchFUsersData();
+                   else if (viewMode === "main") fetchUsersData();
+                   else if (viewMode === "teams") fetchTeamsData();
+                   else if (viewMode === "events") fetchEventsData();
+                 }}
+                 className="px-4 py-3 rounded-2xl bg-[#A020F0] text-white hover:bg-[#8B1BB3] transition-colors"
+               >
+                 🔄
+               </button>
+             </div>
         </div>
       </div>
 
