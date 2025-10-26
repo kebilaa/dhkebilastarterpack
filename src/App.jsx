@@ -115,20 +115,29 @@ function Home({ onNavigate, top3 }) {
           <h2 className="text-2xl md:text-3xl font-bold">Трансляция Twitch</h2>
         </div>
         <div className={cx("rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-          <div className="aspect-video w-full rounded-2xl bg-black/40 grid place-items-center text-gray-500 border border-[#1F2937]">
-            <div className="text-center">
-              <div className="text-2xl mb-2">🎮</div>
-              <div className="text-sm">Здесь будет встраивание Twitch виджета</div>
-              <div className="text-xs text-gray-600 mt-1">Трансляции турниров, стримы продюсеров, live сессии</div>
-            </div>
+          <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[#1F2937]">
+            <iframe
+              src={`https://player.twitch.tv/?channel=digital_hustlas&parent=localhost&parent=127.0.0.1&muted=false`}
+              height="100%"
+              width="100%"
+              allowFullScreen={true}
+              frameBorder="0"
+              scrolling="no"
+              title="Twitch Stream"
+            ></iframe>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-400">
-              <span className="text-cyan-300 font-semibold">LIVE</span> • Стрим турнира 31-FLIP • 127 зрителей
+              <span className="text-cyan-300 font-semibold">LIVE</span> • Стрим турнира 31-FLIP • Digital Hustlas
             </div>
-            <button className="px-4 py-2 rounded-xl bg-[#0F0F10] border border-[#1F2937] text-sm hover:border-cyan-300 transition-colors">
+            <a 
+              href="https://www.twitch.tv/digital_hustlas" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-xl bg-[#0F0F10] border border-[#1F2937] text-sm hover:border-cyan-300 transition-colors inline-block"
+            >
               Открыть на Twitch
-            </button>
+            </a>
           </div>
         </div>
       </section>
