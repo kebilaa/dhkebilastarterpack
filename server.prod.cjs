@@ -591,7 +591,7 @@ app.use((err, req, res, next) => {
 });
 
 // Обработка 404
-app.use('/*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ 
     error: 'Маршрут не найден',
     path: req.originalUrl,
