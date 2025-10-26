@@ -1093,7 +1093,9 @@ function ProdBy() {
       <h1 className="text-3xl md:text-5xl font-extrabold">prod.by</h1>
       <p className="mt-3 text-gray-300 max-w-2xl">Ежемесячная подписка: доступ к закрытому чату, доступ к турнирам, киты, советы по звукорежиссуре и многое другое.</p>
       <div className="mt-6 flex gap-4">
-        <NeonButton>Оформить подписку</NeonButton>
+        <a href="https://t.me/GetMunneyBot" target="_blank" rel="noopener noreferrer">
+          <NeonButton>Оформить подписку</NeonButton>
+        </a>
       </div>
 
       <div className="mt-10">
