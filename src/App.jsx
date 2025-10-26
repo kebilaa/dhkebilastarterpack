@@ -752,7 +752,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
         <div className={cx("p-6 rounded-3xl border", glow(2))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
           <div className="text-xl font-bold mb-2">Календарь раундов</div>
           <ul className="text-gray-300 text-sm space-y-2">
