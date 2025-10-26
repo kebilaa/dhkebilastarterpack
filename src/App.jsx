@@ -80,8 +80,8 @@ function Avatar({ label }) {
 // ---- PAGES ----
 function Home({ onNavigate, top3 }) {
   return (
-    <div className="p-6 md:p-10">
-      <section className="relative min-h-[40vh] flex flex-col items-start justify-center gap-6 overflow-hidden">
+    <div>
+      <section className="relative w-full aspect-video overflow-hidden">
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
           <video
@@ -91,25 +91,13 @@ function Home({ onNavigate, top3 }) {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src="/back.mp4" type="video/mp4" />
+            <source src="/mainbg.mp4" type="video/mp4" />
           </video>
-          {/* Shadow Overlay */}
-          <div className="absolute inset-0 bg-black/50"></div>
         </div>
-        
-        {/* Content */}
-        <div className="relative z-10">
-          <h1 className="text-4xl md:text-7xl font-extrabold leading-tight">
-            DIGITAL HUSTLAS
-          </h1>
-        </div>
-        
-        {/* Gradient Transition */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-black/80"></div>
       </section>
 
       {/* Twitch Stream Section */}
-      <section className="mt-16">
+      <section className="mt-16 px-6 md:px-10">
         <div className="flex items-center gap-3 mb-6">
           <LivePill />
           <h2 className="text-2xl md:text-3xl font-bold">Трансляция Twitch</h2>
@@ -369,8 +357,8 @@ function FlipLeaderboard({ data, onOpenProducer }) {
         </div>
         
         {/* Блок переключателей вкладок */}
-        <div className="flex justify-between items-center">
-          <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937]">
+        <div className="flex justify-between items-center flex-wrap gap-3">
+          <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937] flex-wrap">
             <button
               onClick={() => setViewMode("free")}
               className={cx(
@@ -416,18 +404,17 @@ function FlipLeaderboard({ data, onOpenProducer }) {
               Мероприятия
             </button>
           </div>
-          <div></div>
         </div>
         
         {/* Переключатель сортировки и поиск */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
           {/* Переключатель сортировки для Free и Main */}
           {(viewMode === "free" || viewMode === "main") && (
-            <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937]">
+            <div className="flex bg-[#0F0F10] rounded-2xl p-1 border border-[#1F2937] flex-shrink-0">
               <button
                 onClick={() => setSortBy("l")}
                 className={cx(
-                  "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                  "px-3 md:px-4 py-2 rounded-xl text-sm font-medium transition-all",
                   sortBy === "l"
                     ? "bg-[#00FF41] text-black"
                     : "text-gray-400 hover:text-white"
@@ -438,7 +425,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
               <button
                 onClick={() => setSortBy("tl")}
                 className={cx(
-                  "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                  "px-3 md:px-4 py-2 rounded-xl text-sm font-medium transition-all",
                   sortBy === "tl"
                     ? "bg-[#00FF41] text-black"
                     : "text-gray-400 hover:text-white"
@@ -450,12 +437,12 @@ function FlipLeaderboard({ data, onOpenProducer }) {
           )}
           
              {/* Поиск */}
-             <div className="flex items-center gap-3">
+             <div className="flex items-center gap-3 w-full md:w-auto">
                <input
                  placeholder="Поиск"
                  value={query}
                  onChange={(e) => setQuery(e.target.value)}
-                 className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none min-w-[220px]"
+                 className="px-4 py-3 rounded-2xl bg-[#0F0F10] border border-[#1F2937] outline-none flex-1 md:min-w-[220px]"
                />
                <button
                  onClick={() => {
@@ -464,7 +451,7 @@ function FlipLeaderboard({ data, onOpenProducer }) {
                    else if (viewMode === "teams") fetchTeamsData();
                    else if (viewMode === "events") fetchEventsData();
                  }}
-                 className="px-4 py-3 rounded-2xl bg-[#A020F0] text-white hover:bg-[#8B1BB3] transition-colors"
+                 className="px-4 py-3 rounded-2xl bg-[#A020F0] text-white hover:bg-[#8B1BB3] transition-colors flex-shrink-0"
                >
                  🔄
                </button>
