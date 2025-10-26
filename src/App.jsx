@@ -1058,8 +1058,16 @@ function Radio() {
       <p className="mt-3 text-gray-300 max-w-2xl">Стримим отобранные модераторами треки и биты из закрытой группы prod.by.</p>
 
       <div className={cx("mt-8 rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-        <div className="aspect-video w-full rounded-2xl bg-black/40 grid place-items-center text-gray-500">
-          <span>Здесь будет встраивание YouTube‑плеера</span>
+        <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[#1F2937]">
+          <iframe
+            src="https://www.youtube.com/embed/53FSIMxjtTk?autoplay=0&mute=1"
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Digital Hustlas Radio"
+          ></iframe>
         </div>
       </div>
 
@@ -1202,8 +1210,16 @@ function Media() {
         <p className="mt-3 text-gray-300 max-w-2xl">Стримим отобранные модераторами треки и биты из закрытой группы prod.by.</p>
 
         <div className={cx("mt-8 rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
-          <div className="aspect-video w-full rounded-2xl bg-black/40 grid place-items-center text-gray-500">
-            <span>Здесь будет встраивание YouTube‑плеера</span>
+          <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[#1F2937]">
+            <iframe
+              src="https://www.youtube.com/embed/53FSIMxjtTk?autoplay=0&mute=1"
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title="Digital Hustlas Radio"
+            ></iframe>
           </div>
         </div>
 
