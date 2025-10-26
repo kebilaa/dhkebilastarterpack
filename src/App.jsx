@@ -312,8 +312,8 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   const filteredFUsers = useMemo(() => {
     const list = fusersData.filter((u) => 
-      (u.user_name && u.user_name.toLowerCase().includes(query.toLowerCase())) ||
-      (u.user_team_name && u.user_team_name.toLowerCase().includes(query.toLowerCase()))
+      (u.username && u.username.toLowerCase().includes(query.toLowerCase())) ||
+      (u.team_name && u.team_name.toLowerCase().includes(query.toLowerCase()))
     );
     return list.sort((a, b) => {
       const aValue = sortBy === "l" ? a.l : a.tl;
@@ -557,8 +557,8 @@ function FlipLeaderboard({ data, onOpenProducer }) {
                   filteredFUsers.map((user, idx) => (
                     <tr key={user.id} className={cx("border-t border-[#1F2937] hover:bg-[#0E0E10]", idx < 3 && glow(idx === 0 ? 2 : idx === 1 ? 1 : idx === 2 ? 3 : 0))}>
                       <td className="p-2 md:p-4 font-bold sticky left-0 bg-[#111111] z-10 text-xs md:text-sm">{idx + 1}</td>
-                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={user.user_name}>{user.user_name}</td>
-                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{user.user_team_name}</td>
+                      <td className="p-2 md:p-4 sticky left-12 bg-[#111111] z-10 font-semibold text-xs md:text-sm truncate" title={user.username}>{user.username}</td>
+                      <td className="p-2 md:p-4 sticky left-44 md:left-60 bg-[#111111] z-10 text-xs text-gray-400 font-mono">{user.team_name}</td>
                       <td className="p-2 md:p-4 sticky left-68 md:left-92 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-cyan-400">{user.l}</td>
                       <td className="p-2 md:p-4 sticky left-88 md:left-116 bg-[#111111] z-10 font-semibold text-xs md:text-sm text-purple-400">{user.tl}</td>
                     </tr>
