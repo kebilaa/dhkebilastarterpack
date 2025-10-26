@@ -20,11 +20,17 @@ app.use(morgan('combined'));
 
 // Подключение к базе данных
 const dbPath = './ProdBy/database.db';
-const db = new Database(dbPath);
+
+// Функция для получения нового соединения с БД
+function getDatabase() {
+  return new Database(dbPath);
+}
 
 // Проверка подключения к БД
 try {
-  db.prepare("SELECT 1").get();
+  const testDb = getDatabase();
+  testDb.prepare("SELECT 1").get();
+  testDb.close();
   console.log('✅ База данных подключена успешно');
 } catch (error) {
   console.error('❌ Ошибка подключения к базе данных:', error);
@@ -245,6 +251,7 @@ app.get('/api/judges-data', (req, res) => {
 
 // Функция для получения данных команд
 function getTeamsData() {
+  const db = getDatabase();
   try {
     const teams = db.prepare(`
       SELECT
@@ -267,6 +274,8 @@ function getTeamsData() {
   } catch (error) {
     console.error('Ошибка при получении данных команд:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
@@ -282,6 +291,7 @@ app.get('/api/teams-data', (req, res) => {
 
 // Функция для получения данных FUsers
 function getFUsersData() {
+  const db = getDatabase();
   try {
     const fusers = db.prepare(`
       SELECT
@@ -303,11 +313,14 @@ function getFUsersData() {
   } catch (error) {
     console.error('Ошибка при получении данных FUsers:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
 // Функция для получения данных Users
 function getUsersData() {
+  const db = getDatabase();
   try {
     const users = db.prepare(`
       SELECT
@@ -341,11 +354,14 @@ function getUsersData() {
   } catch (error) {
     console.error('Ошибка при получении данных Users:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
 // Функция для получения данных мероприятий
 function getEventsData() {
+  const db = getDatabase();
   try {
     const events = db.prepare(`
       SELECT DISTINCT 
@@ -436,6 +452,8 @@ function getEventsData() {
   } catch (error) {
     console.error('Ошибка при получении данных мероприятий:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 

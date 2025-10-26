@@ -12,7 +12,22 @@ app.use(express.json());
 
 // Подключение к базе данных
 const dbPath = './ProdBy/database.db';
-const db = new Database(dbPath);
+
+// Функция для получения нового соединения с БД
+function getDatabase() {
+  return new Database(dbPath);
+}
+
+// Проверка подключения к БД
+try {
+  const testDb = getDatabase();
+  testDb.prepare("SELECT 1").get();
+  testDb.close();
+  console.log('✅ База данных подключена успешно');
+} catch (error) {
+  console.error('❌ Ошибка подключения к базе данных:', error);
+  process.exit(1);
+}
 
 // Функция для получения данных турнира 31-flip
 function getFlipData() {
@@ -492,6 +507,7 @@ app.get('/api/judge-history/:name', (req, res) => {
 
 // Функция для получения данных FUsers
 function getFUsersData() {
+  const db = getDatabase();
   try {
     const users = db.prepare(`
       SELECT 
@@ -514,6 +530,8 @@ function getFUsersData() {
   } catch (error) {
     console.error('Ошибка при получении данных FUsers:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
