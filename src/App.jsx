@@ -117,7 +117,7 @@ function Home({ onNavigate, top3 }) {
         <div className={cx("rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
           <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[#1F2937]">
             <iframe
-              src={`https://player.twitch.tv/?channel=digital_hustlas&parent=localhost&parent=127.0.0.1&muted=false`}
+              src={`https://player.twitch.tv/?channel=digital_hustlas&parent=localhost&parent=127.0.0.1&parent=194.32.140.220.nip.io&muted=false`}
               height="100%"
               width="100%"
               allowFullScreen={true}
