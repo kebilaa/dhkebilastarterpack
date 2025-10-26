@@ -91,7 +91,7 @@ function Home({ onNavigate, top3 }) {
             playsInline
             className="w-full h-full object-cover"
           >
-            <source src={`${import.meta.env.BASE_URL}back.mp4`} type="video/mp4" />
+            <source src="/back.mp4" type="video/mp4" />
           </video>
           {/* Shadow Overlay */}
           <div className="absolute inset-0 bg-black/50"></div>
@@ -117,7 +117,7 @@ function Home({ onNavigate, top3 }) {
         <div className={cx("rounded-3xl border p-6", glow(1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
           <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[#1F2937]">
             <iframe
-              src={`https://player.twitch.tv/?channel=digital_hustlas&parent=localhost&parent=127.0.0.1&parent=194.32.140.220.nip.io&muted=false`}
+              src={`https://player.twitch.tv/?channel=digital_hustlas&parent=localhost&parent=127.0.0.1&parent=194.32.140.220.nip.io&parent=194.32.140.220&muted=false`}
               height="100%"
               width="100%"
               allowFullScreen={true}
@@ -1102,7 +1102,7 @@ function ProdBy() {
         </div>
         <div className="flex-1 max-w-md">
           <img 
-            src={`${import.meta.env.BASE_URL}prod.by.png`} 
+            src="/prod.by.png" 
             alt="prod.by" 
             className="w-full h-auto rounded-3xl"
             style={{ border: `1px solid ${COLORS.border}` }}
@@ -1201,7 +1201,7 @@ function Discord() {
       <div className="flex flex-col md:flex-row gap-8 mt-10">
         <div className="flex-1 max-w-md">
           <img 
-            src={`${import.meta.env.BASE_URL}Discord.png`} 
+            src="/Discord.png" 
             alt="Discord" 
             className="w-full h-auto rounded-3xl"
             style={{ border: `1px solid ${COLORS.border}` }}
@@ -1276,7 +1276,7 @@ function Media() {
               <div className={cx("p-4 rounded-3xl border hover:scale-105 transition-transform cursor-pointer", glow((i % 3) + 1))} style={{ background: COLORS.card, borderColor: COLORS.border }}>
                 <div className="aspect-square rounded-2xl mb-3 overflow-hidden">
                   <img 
-                    src={`${import.meta.env.BASE_URL}${release.cover}`} 
+                    src={`/${release.cover}`} 
                     alt={release.title}
                     className="w-full h-full object-cover"
                   />
@@ -1552,7 +1552,7 @@ function Navbar({ page, onNavigate, onOpenProfile }) {
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex items-center gap-4">
         <div className="flex items-center">
           <img 
-            src={`${import.meta.env.BASE_URL}logo.png`} 
+            src="/logo.png" 
             alt="Logo" 
             className="h-10 w-auto object-contain cursor-pointer" 
             onClick={() => handleNavClick("home")}
