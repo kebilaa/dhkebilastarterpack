@@ -297,8 +297,8 @@ function FlipLeaderboard({ data, onOpenProducer }) {
 
   const filteredFUsers = useMemo(() => {
     const list = fusersData.filter((u) => 
-      (u.username && u.username.toLowerCase().includes(query.toLowerCase())) ||
-      (u.team_name && u.team_name.toLowerCase().includes(query.toLowerCase()))
+      (u.user_name && u.user_name.toLowerCase().includes(query.toLowerCase())) ||
+      (u.user_team_name && u.user_team_name.toLowerCase().includes(query.toLowerCase()))
     );
     return list.sort((a, b) => {
       const aValue = sortBy === "l" ? a.l : a.tl;
