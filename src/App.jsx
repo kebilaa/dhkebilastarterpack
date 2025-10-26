@@ -297,23 +297,6 @@ function FlipLeaderboard({ data, onOpenProducer }) {
     }
   }, []);
 
-  // Автоматическое обновление данных каждые 5 секунд
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (viewMode === "free") {
-        fetchFUsersData();
-      } else if (viewMode === "main") {
-        fetchUsersData();
-      } else if (viewMode === "teams") {
-        fetchTeamsData();
-      } else if (viewMode === "events") {
-        fetchEventsData();
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [viewMode]);
-
   const filteredFUsers = useMemo(() => {
     const list = fusersData.filter((u) => 
       (u.user_name && u.user_name.toLowerCase().includes(query.toLowerCase())) ||

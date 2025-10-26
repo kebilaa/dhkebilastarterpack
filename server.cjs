@@ -180,6 +180,7 @@ function getJudgesData() {
 
 // Функция для получения данных участников (Users)
 function getUsersData() {
+  const db = getDatabase();
   try {
     const users = db.prepare(`
       SELECT
@@ -219,6 +220,8 @@ function getUsersData() {
   } catch (error) {
     console.error('Ошибка при получении данных пользователей:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
@@ -244,6 +247,7 @@ app.get('/api/judges-data', (req, res) => {
 
 // Функция для получения данных команд
 function getTeamsData() {
+  const db = getDatabase();
   try {
     const teams = db.prepare(`
       SELECT
@@ -271,6 +275,8 @@ function getTeamsData() {
   } catch (error) {
     console.error('Ошибка при получении данных команд:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
@@ -547,6 +553,7 @@ app.get('/api/fusers-data', (req, res) => {
 
 // Функция для получения данных мероприятий
 function getEventsData() {
+  const db = getDatabase();
   try {
     // Получаем все уникальные мероприятия
     const events = db.prepare(`
@@ -653,6 +660,8 @@ function getEventsData() {
   } catch (error) {
     console.error('Ошибка при получении данных мероприятий:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
