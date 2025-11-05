@@ -82,3 +82,32 @@ jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Database files (should not be tracked)
+*.db
+*.db-shm
+*.db-wal
+database.db*
+ProdBy/database.db*
+ProdBy/*.db
+ProdBy/*.db-shm
+ProdBy/*.db-wal
+
+# Python cache and virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+ProdBy/__pycache__/
+ProdBy/venv/
+ProdBy/*.pyc
+
+# Sensitive files
+ProdBy/google.json
+*.json.key
+*.pem
+*.key
