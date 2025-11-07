@@ -19,7 +19,7 @@ const morgan = require('morgan');
 app.use(morgan('combined'));
 
 // Подключение к базе данных
-const dbPath = './ProdBy/database.db';
+const dbPath = '/var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db';
 
 // Функция для получения нового соединения с БД
 function getDatabase() {
@@ -39,6 +39,7 @@ try {
 
 // Функция для получения данных турнира 31-flip
 function getFlipData() {
+  const db = getDatabase();
   try {
     // Получаем все уникальные event_id из базы
     const events = db.prepare("SELECT DISTINCT event_id FROM Scores ORDER BY event_id DESC").all();
@@ -146,6 +147,8 @@ function getFlipData() {
   } catch (error) {
     console.error('Ошибка при получении данных:', error);
     return { producers: [], events: {} };
+  } finally {
+    db.close();
   }
 }
 
@@ -162,6 +165,7 @@ app.get('/api/flip-data', (req, res) => {
 
 // Функция для получения данных судей
 function getJudgesData() {
+  const db = getDatabase();
   try {
     const judges = db.prepare(`
       SELECT
@@ -183,11 +187,14 @@ function getJudgesData() {
   } catch (error) {
     console.error('Ошибка при получении данных судей:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
 // Функция для получения данных участников
 function getParticipantsData() {
+  const db = getDatabase();
   try {
     const participants = db.prepare(`
       SELECT
@@ -226,6 +233,8 @@ function getParticipantsData() {
   } catch (error) {
     console.error('Ошибка при получении данных участников:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
@@ -489,6 +498,7 @@ app.get('/api/events-data', (req, res) => {
 
 // Функция для получения истории участия участника
 function getParticipantHistory(participantName) {
+  const db = getDatabase();
   try {
     const history = db.prepare(`
       WITH rows AS (
@@ -527,11 +537,14 @@ function getParticipantHistory(participantName) {
   } catch (error) {
     console.error('Ошибка при получении истории участника:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
 // Функция для получения истории судейства судьи
 function getJudgeHistory(judgeName) {
+  const db = getDatabase();
   try {
     const history = db.prepare(`
       SELECT
@@ -565,6 +578,8 @@ function getJudgeHistory(judgeName) {
   } catch (error) {
     console.error('Ошибка при получении истории судьи:', error);
     return [];
+  } finally {
+    db.close();
   }
 }
 
@@ -620,13 +635,11 @@ app.use((req, res) => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('Получен SIGTERM, завершение работы...');
-  db.close();
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
   console.log('Получен SIGINT, завершение работы...');
-  db.close();
   process.exit(0);
 });
 

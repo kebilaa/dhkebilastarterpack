@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 
 // Подключаемся к базе данных
-const db = new Database('/home/ubuntu/ProdBy/database.db');
+const db = new Database('/var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db');
 
 console.log('🗄️ Структура базы данных Digital Hustlas\n');
 

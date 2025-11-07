@@ -34,11 +34,11 @@ pm2 delete digital-hustlas-web 2>/dev/null || true
 
 # Запускаем API сервер
 echo "🌐 Запуск API сервера..."
-pm2 start server.cjs --name "digital-hustlas-api" --log logs/api.log --error logs/api-error.log
+pm2 start server.prod.cjs --name "digital-hustlas-api" --log logs/api.log --error logs/api-error.log
 
-# Запускаем веб-сервер (если нужно)
+# Запускаем веб-сервер
 echo "🌐 Запуск веб-сервера..."
-pm2 serve dist 3000 --name "digital-hustlas-web" --spa --log logs/web.log --error logs/web-error.log
+pm2 start web-server.cjs --name "digital-hustlas-web" --log logs/web.log --error logs/web-error.log
 
 # Сохраняем конфигурацию PM2
 pm2 save

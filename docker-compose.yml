@@ -7,7 +7,7 @@ services:
       - "3000:3000"  # Веб-приложение
       - "3001:3001"  # API сервер
     volumes:
-      - /home/ubuntu/ProdBy/database.db:/app/database.db
+      - /var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db:/app/database.db
       - ./logs:/app/logs
       - ./uploads:/app/uploads
     environment:

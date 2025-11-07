@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Подключение к базе данных
-const dbPath = './ProdBy/database.db';
+const dbPath = '/var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db';
 
 // Функция для получения нового соединения с БД
 function getDatabase() {

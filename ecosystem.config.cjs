@@ -21,12 +21,12 @@ module.exports = {
     },
     {
       name: 'digital-hustlas-web',
-      script: 'npx',
-      args: 'serve dist -s -l 3000',
+      script: 'web-server.cjs',
       instances: 1,
       exec_mode: 'fork',
       env: {
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        PORT: 3000
       },
       log_file: './logs/web.log',
       out_file: './logs/web-out.log',

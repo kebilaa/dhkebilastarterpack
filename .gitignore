@@ -84,6 +84,7 @@ jspm_packages/
 .dynamodb/
 
 # Database files (should not be tracked)
+# Исключаем все файлы базы данных - они управляются отдельным сервисом на сервере
 *.db
 *.db-shm
 *.db-wal
@@ -92,6 +93,9 @@ ProdBy/database.db*
 ProdBy/*.db
 ProdBy/*.db-shm
 ProdBy/*.db-wal
+
+# Исключаем папку ProdBy полностью (она больше не используется в проекте)
+ProdBy/
 
 # Python cache and virtual environment
 __pycache__/

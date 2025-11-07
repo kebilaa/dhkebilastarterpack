@@ -246,14 +246,14 @@ sudo kill -9 PID
 
 ```bash
 # Проверяем права доступа
-ls -la /home/ubuntu/ProdBy/database.db
+ls -la /var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db
 
 # Исправляем права
-chmod 664 /home/ubuntu/ProdBy/database.db
-chown $USER:$USER /home/ubuntu/ProdBy/database.db
+chmod 664 /var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db
+chown $USER:$USER /var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db
 
 # Создаем директорию если не существует
-mkdir -p /home/ubuntu/ProdBy
+mkdir -p /var/www/vhosts/194.32.140.220.nip.io/ProdB
 ```
 
 ### Проблемы с зависимостями
@@ -311,7 +311,7 @@ curl -X GET http://localhost:3001/api/health
 curl -I http://localhost:3000
 
 # Проверка базы данных
-sqlite3 /home/ubuntu/ProdBy/database.db ".tables"
+sqlite3 /var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db ".tables"
 ```
 
 ## 🔐 Безопасность

@@ -11,7 +11,7 @@ if ! command -v sqlite3 &> /dev/null; then
 fi
 
 # Путь к базе данных
-DB_PATH="/home/ubuntu/ProdBy/database.db"
+DB_PATH="/var/www/vhosts/194.32.140.220.nip.io/ProdB/database.db"
 
 # Проверяем, существует ли база данных
 if [ ! -f "$DB_PATH" ]; then
@@ -22,7 +22,7 @@ fi
 
 # Создаем резервную копию
 echo "💾 Создание резервной копии базы данных..."
-BACKUP_PATH="/home/ubuntu/ProdBy/database_backup_$(date +%Y%m%d_%H%M%S).db"
+BACKUP_PATH="/var/www/vhosts/194.32.140.220.nip.io/ProdB/database_backup_$(date +%Y%m%d_%H%M%S).db"
 cp "$DB_PATH" "$BACKUP_PATH"
 echo "✅ Резервная копия создана: $BACKUP_PATH"
 
